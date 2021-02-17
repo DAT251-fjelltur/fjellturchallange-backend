@@ -11,7 +11,7 @@ plugins {
   kotlin("plugin.jpa") version "1.4.10"
 }
 
-group = "no.hvl.dat250"
+group = "no.hvl.dat251"
 version = "0.0.1-SNAPSHOT"
 
 java.sourceCompatibility = JavaVersion.VERSION_11
@@ -63,8 +63,6 @@ spotless {
     endWithNewline()
   }
   java {
-    // don't need to set target, it is inferred from java
-
     // apply a specific flavor of google-java-format
     googleJavaFormat()
   }
