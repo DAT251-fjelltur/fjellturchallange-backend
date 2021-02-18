@@ -1,5 +1,5 @@
 
-name: Deploy to heroku - Dev
+name: Deploy to heroku - Prod
 
 on:
   push:
