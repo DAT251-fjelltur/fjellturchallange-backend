@@ -15,6 +15,6 @@ class AccountController {
 
   @GetMapping("/me")
   fun getMe(@RequestParam(value = "name", defaultValue = "World") name: String): String {
-    return "Hello darkness my friend, $name !"
+    return "Hello light my old friend, $name !"
   }
 }
