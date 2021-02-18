@@ -8,7 +8,7 @@ spring:
       pageable:
         max-page-size: 1000
   datasource:
-    url: jdbc:postgres://ec2-54-228-174-49.eu-west-1.compute.amazonaws.com:5432/d1id11qdj95h7r?user=aselxrnupqgazm&password=77b923813850ffe5143d3fac63ef968700e736c2da2a15e0711e19956bd6ebfa&sslmode=require
+    url: jdbc:postgresql://ec2-54-228-174-49.eu-west-1.compute.amazonaws.com:5432/d1id11qdj95h7r?user=aselxrnupqgazm&password=77b923813850ffe5143d3fac63ef968700e736c2da2a15e0711e19956bd6ebfa&sslmode=require
     password: 77b923813850ffe5143d3fac63ef968700e736c2da2a15e0711e19956bd6ebfa
     username: aselxrnupqgazm
     driverClassName: org.postgresql.Driver
