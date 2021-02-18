@@ -1,0 +1,17 @@
+name: Deploy to heroku - Dev
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.11.10 
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "fjellturchallenge-backend-dev" 
+          heroku_email: ${{secrets.MATHIAS_EMAIL_TO_HEROKU}}
