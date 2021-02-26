@@ -8,7 +8,7 @@ spring:
       pageable:
         max-page-size: 1000
   datasource:
-    url: ${ACTUAL_DATABSE_URL}
+    url: ${ACTUAL_DATABASE_URL}
     driverClassName: org.postgresql.Driver
   jpa:
     show-sql: true
