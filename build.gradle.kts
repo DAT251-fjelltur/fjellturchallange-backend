@@ -6,16 +6,16 @@ plugins {
   id("org.springframework.boot") version "2.3.4.RELEASE"
   id("io.spring.dependency-management") version "1.0.10.RELEASE"
   id("com.diffplug.spotless") version "5.6.1"
-  kotlin("jvm") version "1.4.10"
-  kotlin("plugin.spring") version "1.4.10"
-  kotlin("plugin.jpa") version "1.4.10"
+  kotlin("jvm") version "1.4.31"
+  kotlin("plugin.spring") version "1.4.31"
+  kotlin("plugin.jpa") version "1.4.31"
 }
 
 group = "no.hvl.dat251"
 version = "0.0.1-SNAPSHOT"
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = java.sourceCompatibility
 
 repositories {
   mavenCentral()
@@ -48,7 +48,8 @@ tasks.withType<Test> {
 tasks.withType<KotlinCompile> {
   kotlinOptions {
     freeCompilerArgs = listOf("-Xjsr305=strict")
-    jvmTarget = "1.8"
+    jvmTarget = "${java.sourceCompatibility}"
+    useIR = true
   }
 }
 
@@ -62,12 +63,8 @@ spotless {
     indentWithSpaces(2) // or spaces. Takes an integer argument if you don't like 4
     endWithNewline()
   }
-  java {
-    // apply a specific flavor of google-java-format
-    googleJavaFormat()
-  }
   kotlin {
-    ktlint("0.39.0").userData(
+    ktlint("0.40.0").userData(
       mapOf(
         "indent_size" to "2",
         "continuation_indent_size" to "2",
