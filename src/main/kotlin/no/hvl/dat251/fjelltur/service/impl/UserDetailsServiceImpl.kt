@@ -17,8 +17,6 @@ class UserDetailsServiceImpl(
 
   override fun loadUserByUsername(username: String?): UserDetails {
 
-    System.err.println("soeuhgisgfipsegiosegfsieyfgseyiiiiiiiiiiiiiiiiiiii$username")
-
     if (username == null) {
       throw UsernameNotFoundException("Username must be specified")
     }
@@ -30,8 +28,6 @@ class UserDetailsServiceImpl(
     builder.password(user.password)
     builder.disabled(user.disabled)
     builder.authorities(*user.authorities.toTypedArray())
-
-    System.err.println("LOGGING IN TO $username")
 
     return builder.build()
   }

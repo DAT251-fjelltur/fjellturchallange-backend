@@ -6,10 +6,10 @@ import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
 import no.hvl.dat251.fjelltur.dto.LoginRequest
 import no.hvl.dat251.fjelltur.dto.RegisteredAccountResponse
 import no.hvl.dat251.fjelltur.dto.toResponse
+import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -29,15 +29,19 @@ class AccountController(@Autowired val accountService: AccountService) {
 
     val obj = SecurityContextHolder.getContext().authentication.principal
 
-    if (obj is UserDetails) {
-      return accountService.getAccountByUsername(obj.username).toResponse()
+    if (obj is String) {
+      return accountService.getAccountByUid(obj).toResponse()
     }
 
-    throw error("principal is not UserDetails. but ${obj.javaClass}")
+    throw error("principal is not UserDetails. but $obj class ${obj.javaClass}")
   }
 
   @PostMapping("/$REGISTER_PATH")
   fun register(@Valid @RequestBody request: AccountCreationRequest): RegisteredAccountResponse {
+    if (accountService.getAccountByUsernameOrNull(request.username) != null) {
+      throw AccountCreationFailedException("Account name already taken")
+    }
+
     return accountService.createAccount(request).toResponse()
   }
 

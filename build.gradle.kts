@@ -32,6 +32,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.springframework.boot:spring-boot-starter-amqp")
   implementation("org.postgresql:postgresql:42.2.18")
+  implementation("com.auth0:java-jwt:3.13.0")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
     exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
