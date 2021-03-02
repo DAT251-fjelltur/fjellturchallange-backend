@@ -32,7 +32,7 @@ class SecurityConfig(
   }
 
   override fun configure(http: HttpSecurity) {
-    http.authorizeRequests() // .antMatchers("$API_VERSION_1/**").permitAll()
+    http.authorizeRequests()
       .antMatchers(
         POST,
         "$API_VERSION_1/$ACCOUNTS_PATH/$REGISTER_PATH",
@@ -43,6 +43,5 @@ class SecurityConfig(
       .csrf().disable()
       .formLogin().disable()
       .httpBasic()
-//      .headers().frameOptions().disable()
   }
 }

@@ -35,7 +35,8 @@ class AccountController(@Autowired val accountService: AccountService) {
 
   @PostMapping("/$LOGIN_PATH")
   fun login(@Valid @RequestBody request: LoginRequest): String {
-    val account = accountService.getAccountByUsernameOrNull(request.username) ?: return "Account '${request.username}' not found"
+    val account = accountService.getAccountByUsernameOrNull(request.username)
+      ?: return "Account '${request.username}' not found"
     return "Found account ${account.username}: id ${account.id}"
   }
 
