@@ -2,7 +2,7 @@ package no.hvl.dat251.fjelltur.security
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import no.hvl.dat251.fjelltur.security.JWTAuthenticationFilter.Companion.SECRET
+import no.hvl.dat251.fjelltur.security.config.SecurityProperty
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -11,7 +11,10 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JWTAuthorizationFilter(authManager: AuthenticationManager) : BasicAuthenticationFilter(authManager) {
+class JWTAuthorizationFilter(
+  authManager: AuthenticationManager,
+  private val securityProperty: SecurityProperty
+) : BasicAuthenticationFilter(authManager) {
 
   @Override
   override fun doFilterInternal(req: HttpServletRequest, res: HttpServletResponse, chain: FilterChain) {
@@ -34,7 +37,7 @@ class JWTAuthorizationFilter(authManager: AuthenticationManager) : BasicAuthenti
 
     if (token != null) {
       // parse the token.
-      val user = JWT.require(Algorithm.HMAC512(SECRET.toByteArray()))
+      val user = JWT.require(Algorithm.HMAC512(securityProperty.secretSigningKey.toByteArray()))
         .build().verify(token.replace(TOKEN_PREFIX, "")).subject
 
       if (user != null) {

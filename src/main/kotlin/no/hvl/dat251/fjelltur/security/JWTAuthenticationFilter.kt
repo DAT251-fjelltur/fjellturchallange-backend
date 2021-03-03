@@ -7,8 +7,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.hvl.dat251.fjelltur.API_VERSION_1
 import no.hvl.dat251.fjelltur.controller.AccountController
 import no.hvl.dat251.fjelltur.dto.LoginRequest
+import no.hvl.dat251.fjelltur.security.config.SecurityProperty
 import no.hvl.dat251.fjelltur.service.AccountService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -26,7 +26,8 @@ import javax.servlet.http.HttpServletResponse
 
 class JWTAuthenticationFilter(
   private val authenticationManager: AuthenticationManager,
-  @Autowired val accountService: AccountService
+  private val accountService: AccountService,
+  private val securityProperty: SecurityProperty
 ) : UsernamePasswordAuthenticationFilter() {
 
   @Throws(AuthenticationException::class)
@@ -58,8 +59,8 @@ class JWTAuthenticationFilter(
 
     val token: String = JWT.create()
       .withSubject(account.id)
-      .withExpiresAt(Date.from(Instant.now().plus(Duration.ofDays(EXPIRATION_TIME_IN_DAYS))))
-      .sign(Algorithm.HMAC512(SECRET.toByteArray()))
+      .withExpiresAt(Date.from(Instant.now().plus(Duration.ofDays(securityProperty.maxAgeInDays))))
+      .sign(Algorithm.HMAC512(securityProperty.secretSigningKey.toByteArray()))
 
     res.writer.write(mapper.writeValueAsString(mapOf("jwt" to token)))
     res.writer.flush()
@@ -77,9 +78,9 @@ class JWTAuthenticationFilter(
 
     val mapper = jacksonObjectMapper()
 
-    const val EXPIRATION_TIME_IN_DAYS = 365L // Login once every year
-    const val SECRET =
-      "Og5tX2xVYFdiVjRRZVBiW2lbOg5sXGRQMwQ2UGRVMQJmUzJUZ1VgAjsDYAQ0VjMLMlRmA2BVZgIxADJUbVg6X2hbY1poXWoMP" +
-        "Aw1BGVQZwMzAWMHNgJmBDQNa1JiBzYAYVRjWj9dal1qX24NOw01AjUGYAUxBz4HYwFkBTNVMAQ="
+//    const val EXPIRATION_TIME_IN_DAYS = 365L // Login once every year
+//    const val SECRET =
+//      "Og5tX2xVYFdiVjRRZVBiW2lbOg5sXGRQMwQ2UGRVMQJmUzJUZ1VgAjsDYAQ0VjMLMlRmA2BVZgIxADJUbVg6X2hbY1poXWoMP" +
+//        "Aw1BGVQZwMzAWMHNgJmBDQNa1JiBzYAYVRjWj9dal1qX24NOw01AjUGYAUxBz4HYwFkBTNVMAQ="
   }
 }

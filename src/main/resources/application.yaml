@@ -23,3 +23,6 @@ logging:
       springframework:
         security: DEBUG
     root: INFO
+security:
+  #Not defining secret-signing-key will cause a new random key to be created each time the server starts
+  secret-signing-key: ${SIGNING_KEY} #Might need to be updated once in a while

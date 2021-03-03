@@ -4,6 +4,7 @@ import no.hvl.dat251.fjelltur.API_VERSION_1
 import no.hvl.dat251.fjelltur.controller.AccountController.Companion.ACCOUNTS_PATH
 import no.hvl.dat251.fjelltur.controller.AccountController.Companion.LOGIN_PATH
 import no.hvl.dat251.fjelltur.controller.AccountController.Companion.REGISTER_PATH
+import no.hvl.dat251.fjelltur.security.config.SecurityProperty
 import no.hvl.dat251.fjelltur.service.AccountService
 import no.hvl.dat251.fjelltur.service.impl.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,13 +25,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = false)
-class SecurityConfig(
+class WebSecurityConfigurerAdapterImpl(
   @Autowired
   private val userDetailsService: UserDetailsServiceImpl,
   @Autowired
   private val passwordEncoder: PasswordEncoder,
   @Autowired
   private val accountService: AccountService,
+  @Autowired
+  private val securityProperty: SecurityProperty,
 ) : WebSecurityConfigurerAdapter() {
 
   override fun configure(auth: AuthenticationManagerBuilder) {
@@ -48,9 +51,9 @@ class SecurityConfig(
       .logout().permitAll().and()
       .csrf().disable()
       .formLogin().disable()
-      .httpBasic().and()
-      .addFilter(JWTAuthenticationFilter(authenticationManager(), accountService))
-      .addFilter(JWTAuthorizationFilter(authenticationManager()))
+      .httpBasic().disable()
+      .addFilter(JWTAuthenticationFilter(authenticationManager(), accountService, securityProperty))
+      .addFilter(JWTAuthorizationFilter(authenticationManager(), securityProperty))
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
   }
 

@@ -1,0 +1,16 @@
+{
+  "properties": [
+    {
+      "name": "security.secret-signing-key",
+      "type": "java.lang.String",
+      "description": "Key to sign JWT tokens.",
+      "defaultValue": "Random UUID value generated on each startup"
+    },
+    {
+      "name": "security.max-age-in-days",
+      "type": "java.lang.Long",
+      "description": "Maximum number of days a user can stay logged, until another login is required.",
+      "defaultValue": 30
+    }
+  ]
+}

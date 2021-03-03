@@ -3,3 +3,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/fjelltur
     password: 87df20a6b2a8440007b601cab55e15dd7b37a6a01add83e7cea97767adc3dea3
     username: admin
+security:
+  secret-signing-key: test
+  max-age-in-days: 9999
