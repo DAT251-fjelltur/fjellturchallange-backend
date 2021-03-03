@@ -60,7 +60,8 @@ class JWTAuthenticationFilter(
       .withSubject(account.id)
       .withExpiresAt(Date.from(Instant.now().plus(Duration.ofDays(EXPIRATION_TIME_IN_DAYS))))
       .sign(Algorithm.HMAC512(SECRET.toByteArray()))
-    res.writer.write(token)
+
+    res.writer.write(mapper.writeValueAsString(mapOf("jwt" to token)))
     res.writer.flush()
   }
 
