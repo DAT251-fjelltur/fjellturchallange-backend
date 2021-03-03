@@ -3,7 +3,6 @@ package no.hvl.dat251.fjelltur.controller
 import no.hvl.dat251.fjelltur.API_VERSION_1
 import no.hvl.dat251.fjelltur.controller.AccountController.Companion.ACCOUNTS_PATH
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
-import no.hvl.dat251.fjelltur.dto.LoginRequest
 import no.hvl.dat251.fjelltur.dto.RegisteredAccountResponse
 import no.hvl.dat251.fjelltur.dto.toResponse
 import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
@@ -43,13 +42,6 @@ class AccountController(@Autowired val accountService: AccountService) {
     }
 
     return accountService.createAccount(request).toResponse()
-  }
-
-  @PostMapping("/$LOGIN_PATH")
-  fun login(@Valid @RequestBody request: LoginRequest): String {
-    val account = accountService.getAccountByUsernameOrNull(request.username)
-      ?: return "Account '${request.username}' not found"
-    return "Found account ${account.username}: id ${account.id}"
   }
 
   companion object {
