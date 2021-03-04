@@ -19,7 +19,7 @@ data class RegisteredAccountResponse(
   val photoUrl: String,
   val score: Float,
   val disabled: Boolean,
-  val permission: Set<String>
+  val permissions: Set<String>
 )
 
 fun Account.toResponse(): RegisteredAccountResponse = RegisteredAccountResponse(id.toString(), username, photoUrl ?: "", score, disabled, authorities)

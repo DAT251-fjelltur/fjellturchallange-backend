@@ -5,7 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.hvl.dat251.fjelltur.API_VERSION_1
-import no.hvl.dat251.fjelltur.controller.AccountController
+import no.hvl.dat251.fjelltur.controller.AccountController.Companion.ACCOUNTS_PATH
+import no.hvl.dat251.fjelltur.controller.AccountController.Companion.LOGIN_PATH
 import no.hvl.dat251.fjelltur.dto.LoginRequest
 import no.hvl.dat251.fjelltur.security.config.SecurityProperty
 import no.hvl.dat251.fjelltur.service.AccountService
@@ -37,9 +38,7 @@ class JWTAuthenticationFilter(
   ): Authentication {
     return try {
       val creds: LoginRequest = mapper.readValue(req.inputStream)
-      authenticationManager.authenticate(
-        UsernamePasswordAuthenticationToken(creds.username, creds.password, ArrayList())
-      )
+      authenticationManager.authenticate(UsernamePasswordAuthenticationToken(creds.username, creds.password, ArrayList()))
     } catch (e: IOException) {
       throw RuntimeException(e)
     }
@@ -71,16 +70,10 @@ class JWTAuthenticationFilter(
   }
 
   init {
-    setFilterProcessesUrl("$API_VERSION_1/${AccountController.ACCOUNTS_PATH}/${AccountController.LOGIN_PATH}")
+    setFilterProcessesUrl("$API_VERSION_1/$ACCOUNTS_PATH/$LOGIN_PATH")
   }
 
   companion object {
-
     val mapper = jacksonObjectMapper()
-
-//    const val EXPIRATION_TIME_IN_DAYS = 365L // Login once every year
-//    const val SECRET =
-//      "Og5tX2xVYFdiVjRRZVBiW2lbOg5sXGRQMwQ2UGRVMQJmUzJUZ1VgAjsDYAQ0VjMLMlRmA2BVZgIxADJUbVg6X2hbY1poXWoMP" +
-//        "Aw1BGVQZwMzAWMHNgJmBDQNa1JiBzYAYVRjWj9dal1qX24NOw01AjUGYAUxBz4HYwFkBTNVMAQ="
   }
 }

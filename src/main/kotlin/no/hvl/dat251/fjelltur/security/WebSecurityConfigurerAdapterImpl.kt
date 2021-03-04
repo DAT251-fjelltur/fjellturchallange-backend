@@ -24,7 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = false)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurityConfigurerAdapterImpl(
   @Autowired
   private val userDetailsService: UserDetailsServiceImpl,
@@ -53,7 +53,7 @@ class WebSecurityConfigurerAdapterImpl(
       .formLogin().disable()
       .httpBasic().disable()
       .addFilter(JWTAuthenticationFilter(authenticationManager(), accountService, securityProperty))
-      .addFilter(JWTAuthorizationFilter(authenticationManager(), securityProperty))
+      .addFilter(JWTAuthorizationFilter(authenticationManager(), accountService, securityProperty))
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
   }
 

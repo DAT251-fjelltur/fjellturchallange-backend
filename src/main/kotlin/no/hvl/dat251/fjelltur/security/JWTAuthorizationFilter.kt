@@ -3,8 +3,10 @@ package no.hvl.dat251.fjelltur.security
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import no.hvl.dat251.fjelltur.security.config.SecurityProperty
+import no.hvl.dat251.fjelltur.service.AccountService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import javax.servlet.FilterChain
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletResponse
 
 class JWTAuthorizationFilter(
   authManager: AuthenticationManager,
+  private val accountService: AccountService,
   private val securityProperty: SecurityProperty
 ) : BasicAuthenticationFilter(authManager) {
 
@@ -37,17 +40,17 @@ class JWTAuthorizationFilter(
 
     if (token != null) {
       // parse the token.
-      val user = JWT.require(Algorithm.HMAC512(securityProperty.secretSigningKey.toByteArray()))
-        .build().verify(token.replace(TOKEN_PREFIX, "")).subject
+      val id = JWT.require(Algorithm.HMAC512(securityProperty.secretSigningKey.toByteArray()))
+        .build().verify(token.replace(TOKEN_PREFIX, "")).subject ?: return null
 
-      if (user != null) {
-        // new arraylist means authorities
-        return UsernamePasswordAuthenticationToken(user, null, ArrayList())
-      }
+      val account = accountService.getAccountByUidOrNull(id) ?: return null
 
-      return null
+      return UsernamePasswordAuthenticationToken(
+        id,
+        null,
+        account.authorities.map { SimpleGrantedAuthority(it) }
+      )
     }
-
     return null
   }
 
