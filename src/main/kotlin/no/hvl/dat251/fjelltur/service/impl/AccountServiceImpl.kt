@@ -1,6 +1,7 @@
 package no.hvl.dat251.fjelltur.service.impl
 
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
+import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
 import no.hvl.dat251.fjelltur.exception.AccountUpdateFailedException
 import no.hvl.dat251.fjelltur.exception.InvalidCredentialsException
@@ -27,6 +28,13 @@ class AccountServiceImpl(
 ) : AccountService {
 
   override fun createAccount(request: AccountCreationRequest): Account {
+    if (getAccountByUsernameOrNull(request.username) != null) {
+      throw AccountCreationFailedException("Account name already taken")
+    }
+    if (!USERNAME_REGEX.matches(request.username)) {
+      throw AccountCreationFailedException("Account username must match the regex: ${USERNAME_REGEX.pattern}")
+    }
+
     if (request.password.length < 8) {
       throw PasswordNotSecureException("${request.username} your password is too short")
     }
@@ -59,7 +67,8 @@ class AccountServiceImpl(
   override val isNotLoggedIn: Boolean get() = loggedInUidOrNull == null
 
   override fun getAccountByUsername(username: String): Account {
-    return getAccountByUsernameOrNull(username) ?: throw UsernameNotFoundException("No user with the username $username")
+    return getAccountByUsernameOrNull(username)
+      ?: throw UsernameNotFoundException("No user with the username $username")
   }
 
   override fun getAccountByUsernameOrNull(username: String): Account? {
@@ -114,5 +123,9 @@ class AccountServiceImpl(
 
   override fun userExists(username: String): Boolean {
     return getAccountByUsernameOrNull(username) != null
+  }
+
+  companion object { // simulerer noe statisk
+    val USERNAME_REGEX = "^[a-zA-Z0-9ÆØÅæøå_-]+$".toRegex() // Account username must match this regex
   }
 }

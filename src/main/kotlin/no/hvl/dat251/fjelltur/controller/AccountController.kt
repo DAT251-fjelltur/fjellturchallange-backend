@@ -8,7 +8,6 @@ import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
 import no.hvl.dat251.fjelltur.dto.RegisteredAccountResponse
 import no.hvl.dat251.fjelltur.dto.UpdatePasswordRequest
 import no.hvl.dat251.fjelltur.dto.toResponse
-import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.MissingFieldException
 import no.hvl.dat251.fjelltur.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
@@ -71,10 +70,6 @@ class AccountController(@Autowired val accountService: AccountService) {
 
   @PostMapping("/$REGISTER_PATH")
   fun register(@Valid @RequestBody request: AccountCreationRequest): RegisteredAccountResponse {
-    if (accountService.getAccountByUsernameOrNull(request.username) != null) {
-      throw AccountCreationFailedException("Account name already taken")
-    }
-
     return accountService.createAccount(request).toResponse()
   }
 
