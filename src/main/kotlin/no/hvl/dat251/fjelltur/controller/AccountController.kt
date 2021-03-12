@@ -6,6 +6,7 @@ import no.hvl.dat251.fjelltur.GET_OTHER_PERMISSION
 import no.hvl.dat251.fjelltur.controller.AccountController.Companion.ACCOUNTS_PATH
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
 import no.hvl.dat251.fjelltur.dto.RegisteredAccountResponse
+import no.hvl.dat251.fjelltur.dto.UpdatePasswordRequest
 import no.hvl.dat251.fjelltur.dto.toResponse
 import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.MissingFieldException
@@ -75,6 +76,11 @@ class AccountController(@Autowired val accountService: AccountService) {
     }
 
     return accountService.createAccount(request).toResponse()
+  }
+
+  @PutMapping("/update_password")
+  fun updatePassword(@Valid @RequestBody request: UpdatePasswordRequest) {
+    accountService.changePassword(request.oldPassword, request.newPassword)
   }
 
   companion object {
