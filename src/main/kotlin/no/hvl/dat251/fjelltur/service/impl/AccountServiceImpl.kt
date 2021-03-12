@@ -2,7 +2,10 @@ package no.hvl.dat251.fjelltur.service.impl
 
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
+import no.hvl.dat251.fjelltur.exception.AccountUpdateFailedException
+import no.hvl.dat251.fjelltur.exception.InvalidCredentialsException
 import no.hvl.dat251.fjelltur.exception.NotLoggedInException
+import no.hvl.dat251.fjelltur.exception.PasswordNotSecureException
 import no.hvl.dat251.fjelltur.model.Account
 import no.hvl.dat251.fjelltur.repository.AccountRepository
 import no.hvl.dat251.fjelltur.service.AccountService
@@ -24,6 +27,10 @@ class AccountServiceImpl(
 ) : AccountService {
 
   override fun createAccount(request: AccountCreationRequest): Account {
+    if (request.password.length < 8) {
+      throw PasswordNotSecureException("${request.username} your password is too short")
+    }
+
     val account = Account()
     account.password = passwordEncoder.encode(request.password)
     account.username = request.username
@@ -79,6 +86,11 @@ class AccountServiceImpl(
   // TODO make sure user only updates permitted fields
 
   override fun updateUser(user: Account): Account {
+    val uid = user.id
+
+    if (uid == null || user.password != getAccountByUid(uid).password) {
+      throw AccountUpdateFailedException("Use dedicated method to update password")
+    }
     return accountRepository.saveAndFlush(user)
   }
 
@@ -88,12 +100,15 @@ class AccountServiceImpl(
     accountRepository.deleteById(account.id.toString())
   }
 
-  // TODO make sure user is allowed to change password
   // TODO Test
   override fun changePassword(oldPassword: String, newPassword: String): Account {
     val acc = getCurrentAccount()
-    if (oldPassword != acc.password) throw error("not eql pass lol")
-    acc.password = newPassword
+    if (newPassword.length < 8) {
+      throw PasswordNotSecureException("${acc.username} your password is too short")
+    }
+
+    if (!passwordEncoder.matches(oldPassword, acc.password)) throw InvalidCredentialsException("${acc.username} your password do not match current password")
+    acc.password = passwordEncoder.encode(newPassword)
     return accountRepository.saveAndFlush(acc)
   }
 
