@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Application local" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="Fjellturchallenge-backend.main" />
+    <module name="fjellturchallenge-backend.main" />
     <extension name="net.ashald.envfile">
       <option name="IS_ENABLED" value="false" />
       <option name="IS_SUBST" value="false" />

@@ -26,3 +26,6 @@ class AccountUpdateFailedException(message: String?) : RuntimeException(message)
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 class AccountCreationFailedException(message: String?) : RuntimeException(message)
+
+@ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+class PasswordNotSecureException(message: String?) : RuntimeException(message)
