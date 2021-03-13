@@ -3,6 +3,7 @@ package no.hvl.dat251.fjelltur.dto
 import no.hvl.dat251.fjelltur.model.GPSLocation
 import no.hvl.dat251.fjelltur.model.Trip
 import java.math.BigDecimal
+import java.time.Duration
 import java.time.OffsetDateTime
 import javax.validation.constraints.DecimalMax
 import javax.validation.constraints.DecimalMin
@@ -70,8 +71,12 @@ fun Trip.toResponse(): TripResponse {
   )
 }
 
-data class TripIdOnlyResponse(val id: TripId)
+data class TripIdOnlyResponse(val id: String?)
 
-fun Trip.toTripIdOnlyResponse(): TripIdOnlyResponse {
-  return TripIdOnlyResponse(id)
+fun Trip?.toTripIdOnlyResponse(): TripIdOnlyResponse {
+  return TripIdOnlyResponse(this?.id?.id)
 }
+
+data class TripDurationResponse(val seconds: Long)
+
+fun Duration.toTripDuration() = TripDurationResponse(toSeconds())

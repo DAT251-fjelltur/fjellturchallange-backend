@@ -3,8 +3,10 @@ package no.hvl.dat251.fjelltur.service.impl
 import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.dto.TripId
 import no.hvl.dat251.fjelltur.dto.TripStartRequest
+import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.exception.TripNotOngoingException
+import no.hvl.dat251.fjelltur.model.Account
 import no.hvl.dat251.fjelltur.model.GPSLocation
 import no.hvl.dat251.fjelltur.model.Trip
 import no.hvl.dat251.fjelltur.repository.TripRepository
@@ -13,6 +15,7 @@ import no.hvl.dat251.fjelltur.service.TripService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.time.Duration
 
 @Service
 class TripServiceImpl(
@@ -58,5 +61,24 @@ class TripServiceImpl(
 
   override fun findTripOrNull(id: TripId): Trip? {
     return tripRepository.findByIdOrNull(id.id)
+  }
+
+  override fun calculateTripDuration(trip: Trip): Duration {
+    val locations = trip.locations
+    val first = locations.first()
+    val last = locations.last()
+    return Duration.between(first.recordedAt, last.recordedAt).abs()
+  }
+
+  override fun currentTrip(): Trip? {
+    return currentTrip(accountService.getCurrentAccount())
+  }
+
+  override fun currentTrip(account: Account): Trip? {
+    val trips = tripRepository.findAllByParticipantsContainsAndOngoingTrue(account)
+    if (trips.size > 1) {
+      TODO("more than one trip should be handled")
+    }
+    return trips.firstOrNull()
   }
 }
