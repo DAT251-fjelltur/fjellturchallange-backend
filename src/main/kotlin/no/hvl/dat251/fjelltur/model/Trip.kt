@@ -8,6 +8,7 @@ import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.ManyToMany
 import javax.persistence.OneToMany
 import javax.persistence.OrderBy
 
@@ -27,7 +28,6 @@ class Trip {
 
   var ongoing: Boolean = true
 
-  @field:OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
-  @field:JoinColumn(name = "trip_id")
+  @field:ManyToMany(cascade = [CascadeType.ALL])
   var participants: MutableSet<Account> = mutableSetOf()
 }

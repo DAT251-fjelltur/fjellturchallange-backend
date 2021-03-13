@@ -126,7 +126,8 @@ class AccountServiceImpl(
     return getAccountByUsernameOrNull(username) != null
   }
 
-  companion object { // simulerer noe statisk
-    val USERNAME_REGEX = "^[a-zA-Z0-9ÆØÅæøå_-]+$".toRegex() // Account username must match this regex
+  companion object {
+    /** Account username must match this regex */
+    val USERNAME_REGEX = "^[a-zA-Z0-9ÆØÅæøå_-]+$".toRegex()
   }
 }
