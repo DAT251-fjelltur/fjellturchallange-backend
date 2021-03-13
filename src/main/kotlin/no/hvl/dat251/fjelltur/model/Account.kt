@@ -1,5 +1,6 @@
 package no.hvl.dat251.fjelltur.model
 
+import no.hvl.dat251.fjelltur.dto.AccountId
 import org.hibernate.annotations.GenericGenerator
 import javax.persistence.Column
 import javax.persistence.ElementCollection
@@ -15,7 +16,7 @@ class Account {
   @field:GeneratedValue(generator = "system-uuid")
   @field:GenericGenerator(name = "system-uuid", strategy = "uuid")
   @field:Column(unique = true)
-  var id: String? = null
+  var id: AccountId = AccountId("")
 
   @field:Column(unique = true, nullable = false)
   lateinit var username: String

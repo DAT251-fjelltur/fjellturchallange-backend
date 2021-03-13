@@ -1,6 +1,7 @@
 package no.hvl.dat251.fjelltur.service.impl
 
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
+import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
 import no.hvl.dat251.fjelltur.exception.AccountUpdateFailedException
@@ -55,12 +56,12 @@ class AccountServiceImpl(
     return getAccountByUidOrNull(principal)
   }
 
-  override val loggedInUid: String get() = loggedInUidOrNull ?: throw NotLoggedInException()
-  override val loggedInUidOrNull: String?
+  override val loggedInUid: AccountId get() = loggedInUidOrNull ?: throw NotLoggedInException()
+  override val loggedInUidOrNull: AccountId?
     get() {
       val uid = SecurityContextHolder.getContext().authentication.principal
       require(uid is String?) { "JWT subject is not a string" }
-      return uid
+      return AccountId(uid)
     }
 
   override val isLoggedIn: Boolean get() = loggedInUidOrNull != null
@@ -75,12 +76,12 @@ class AccountServiceImpl(
     return accountRepository.findAccountByUsername(username)
   }
 
-  override fun getAccountByUid(uid: String): Account {
-    return getAccountByUidOrNull(uid) ?: throw AccountNotFoundException("uid $uid")
+  override fun getAccountByUid(uid: AccountId): Account {
+    return getAccountByUidOrNull(uid) ?: throw AccountNotFoundException(uid)
   }
 
-  override fun getAccountByUidOrNull(uid: String): Account? {
-    return accountRepository.findByIdOrNull(uid)
+  override fun getAccountByUidOrNull(uid: AccountId): Account? {
+    return accountRepository.findByIdOrNull(uid.id)
   }
 
   private fun findAllAccounts(query: () -> Page<Account>): Page<Account> {
@@ -97,7 +98,7 @@ class AccountServiceImpl(
   override fun updateUser(user: Account): Account {
     val uid = user.id
 
-    if (uid == null || user.password != getAccountByUid(uid).password) {
+    if (user.password != getAccountByUid(uid).password) {
       throw AccountUpdateFailedException("Use dedicated method to update password")
     }
     return accountRepository.saveAndFlush(user)
@@ -106,7 +107,7 @@ class AccountServiceImpl(
   // TODO Test
   override fun deleteUser(username: String) {
     val account = getAccountByUsername(username)
-    accountRepository.deleteById(account.id.toString())
+    accountRepository.deleteById(account.id.id)
   }
 
   // TODO Test

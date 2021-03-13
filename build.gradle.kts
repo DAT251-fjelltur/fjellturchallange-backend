@@ -48,6 +48,12 @@ tasks.withType<Test> {
   useJUnitPlatform()
 }
 
+kotlin {
+  sourceSets.all {
+    languageSettings.enableLanguageFeature("InlineClasses")
+  }
+}
+
 tasks.withType<KotlinCompile> {
   kotlinOptions {
     freeCompilerArgs = listOf("-Xjsr305=strict")

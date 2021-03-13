@@ -1,5 +1,6 @@
 package no.hvl.dat251.fjelltur.exception
 
+import no.hvl.dat251.fjelltur.dto.AccountId
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 class NotUniqueAccountEmailException : RuntimeException("An account with the given email already exists")
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-class AccountNotFoundException(id: String) : RuntimeException("Failed to find an account with $id")
+class AccountNotFoundException(id: AccountId) : RuntimeException("Failed to find an account with $id")
 
 @ResponseStatus(HttpStatus.FORBIDDEN)
 class NotLoggedInException : RuntimeException("You must be logged to use this endpoint")
