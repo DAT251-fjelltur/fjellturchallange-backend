@@ -22,7 +22,16 @@ class TripServiceImpl(
 
   override fun startTrip(request: TripStartRequest): Trip {
     val trip = Trip()
-    trip.participants.addAll(request.participants.map { accountService.getAccountByUid(AccountId(it)) })
+
+    // TODO make sure either the user in on the participant map or has the permission to start a trip without themself
+    val list = request.participants.map { accountService.getAccountByUid(AccountId(it)) }
+    for (account in list) {
+      if (tripRepository.existsTripByParticipantsContainsAndOngoingTrue(account)) {
+        throw AccountAlreadyOnTripException(account)
+      }
+    }
+    trip.participants.addAll(list)
+
     trip.locations.add(request.startLocation.toGPSLocation())
     return tripRepository.saveAndFlush(trip)
   }
