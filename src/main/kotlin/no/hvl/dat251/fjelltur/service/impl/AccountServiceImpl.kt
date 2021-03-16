@@ -12,10 +12,12 @@ import no.hvl.dat251.fjelltur.model.Account
 import no.hvl.dat251.fjelltur.repository.AccountRepository
 import no.hvl.dat251.fjelltur.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -25,7 +27,9 @@ class AccountServiceImpl(
   @Autowired
   private val accountRepository: AccountRepository,
   @Autowired
-  private val passwordEncoder: PasswordEncoder
+  private val passwordEncoder: PasswordEncoder,
+  @Autowired
+  private val environment: Environment
 ) : AccountService {
 
   override fun createAccount(request: AccountCreationRequest): Account {
@@ -57,11 +61,25 @@ class AccountServiceImpl(
   }
 
   override val loggedInUid: AccountId get() = loggedInUidOrNull ?: throw NotLoggedInException()
+
   override val loggedInUidOrNull: AccountId?
     get() {
-      val uid = SecurityContextHolder.getContext().authentication.principal
-      require(uid is String?) { "JWT subject is not a string" }
-      return AccountId(uid)
+      return when (val principal = SecurityContextHolder.getContext().authentication.principal) {
+        is String -> AccountId(principal)
+        is UserDetails -> {
+          check("test" in environment.activeProfiles) { "Authentication principal cannot be a UserDetails when the 'test' profile is not active" }
+          val existingAccount = getAccountByUsernameOrNull(principal.username)
+          if (existingAccount != null) {
+            // if an account with the account already exists we delete it
+            // this ensure the user specified in the test is as expected (ie correct password and authorities)
+            accountRepository.delete(existingAccount)
+          }
+          val account = createAccount(AccountCreationRequest(principal.username, principal.password, null))
+          account.authorities.addAll(principal.authorities.map { it.authority })
+          return accountRepository.saveAndFlush(account).id
+        }
+        else -> error("Authentication principal is not a account id or a UserDetails. It is $principal")
+      }
     }
 
   override val isLoggedIn: Boolean get() = loggedInUidOrNull != null

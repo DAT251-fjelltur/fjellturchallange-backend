@@ -38,13 +38,14 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-security:1.5.5")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.5.5")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.5.5")
-  
+
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test") {
-    exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-  }
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.springframework.security:spring-security-test")
+  testImplementation("org.jetbrains.kotlin:kotlin-test")
+  testRuntimeOnly("com.h2database:h2")
+
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }

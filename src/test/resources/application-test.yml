@@ -1,0 +1,8 @@
+spring:
+  jpa.properties.hibernate.dialect: org.hibernate.dialect.H2Dialect
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+security:
+  secret-signing-key: test
+  max-age-in-days: 9999
