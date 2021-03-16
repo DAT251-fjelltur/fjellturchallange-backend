@@ -70,9 +70,9 @@ class AccountServiceImpl(
           check("test" in environment.activeProfiles) { "Authentication principal cannot be a UserDetails when the 'test' profile is not active" }
           val existingAccount = getAccountByUsernameOrNull(principal.username)
           if (existingAccount != null) {
-            // if an account with the account already exists we delete it
-            // this ensure the user specified in the test is as expected (ie correct password and authorities)
-            accountRepository.delete(existingAccount)
+            //This persist between tests
+            // one fix is to add `@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)` to the test class
+            return existingAccount.id
           }
           val account = createAccount(AccountCreationRequest(principal.username, principal.password, null))
           account.authorities.addAll(principal.authorities.map { it.authority })

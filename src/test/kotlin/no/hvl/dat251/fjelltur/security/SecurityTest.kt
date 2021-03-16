@@ -7,13 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.annotation.DirtiesContext.ClassMode
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -34,11 +36,12 @@ class SecurityTest {
     assertEquals(setOf("test_auth", "ROLE_test"), account.authorities)
   }
 
-  @WithMockUser(username = "test")
+
+  @WithMockUser
   @Test
-  fun `User with the same name does not exist in multiple test methods`() {
-    // Yeah its kinda meta
-    val account = assertNotNull(accountService.getCurrentAccountOrNull())
-    assertFalse(passwordEncoder.matches("test2testet", account.password))
+  fun `same user is returned when getCurrentAccount`() {
+    val account1 = accountService.getCurrentAccount()
+    val account2 = accountService.getCurrentAccount()
+    assertEquals(account1, account2)
   }
 }
