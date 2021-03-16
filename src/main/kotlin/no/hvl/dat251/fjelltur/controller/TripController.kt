@@ -45,7 +45,7 @@ class TripController(
     tripService.addGPSLocation(trip, request.toGPSLocation())
   }
 
-  @PostMapping("/{id}/stop")
+  @PutMapping("/{id}/stop")
   fun endTrip(@PathVariable id: TripId): TripResponse {
     val trip = tripService.findTrip(id)
     return tripService.endTrip(trip).toResponse()
