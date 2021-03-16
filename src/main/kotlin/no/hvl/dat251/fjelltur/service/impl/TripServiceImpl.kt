@@ -1,9 +1,9 @@
 package no.hvl.dat251.fjelltur.service.impl
 
-import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.dto.TripId
 import no.hvl.dat251.fjelltur.dto.TripStartRequest
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
+import no.hvl.dat251.fjelltur.exception.TooManyOngoingTripsException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.exception.TripNotOngoingException
 import no.hvl.dat251.fjelltur.model.Account
@@ -25,17 +25,14 @@ class TripServiceImpl(
 ) : TripService {
 
   override fun startTrip(request: TripStartRequest): Trip {
-    val trip = Trip()
+    val account = accountService.getCurrentAccount()
 
-    // TODO make sure either the user in on the participant map or has the permission to start a trip without themself
-    val list = request.participants.map { accountService.getAccountByUid(AccountId(it)) }
-    for (account in list) {
-      if (tripRepository.existsTripByParticipantsContainsAndOngoingTrue(account)) {
-        throw AccountAlreadyOnTripException(account)
-      }
+    if (tripRepository.existsTripByAccountIsAndOngoingTrue(account)) {
+      throw AccountAlreadyOnTripException(account)
     }
-    trip.participants.addAll(list)
 
+    val trip = Trip()
+    trip.account = account
     trip.locations.add(request.startLocation.toGPSLocation())
     return tripRepository.saveAndFlush(trip)
   }
@@ -76,7 +73,7 @@ class TripServiceImpl(
   }
 
   override fun currentTrip(account: Account): Trip? {
-    val trips = tripRepository.findAllByParticipantsContainsAndOngoingTrue(account)
+    val trips = tripRepository.findAllByAccountIsAndOngoingTrue(account)
     if (trips.size > 1) {
       TODO("more than one trip should be handled")
     }

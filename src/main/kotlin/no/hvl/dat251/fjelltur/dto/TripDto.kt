@@ -8,7 +8,6 @@ import java.time.OffsetDateTime
 import javax.validation.constraints.DecimalMax
 import javax.validation.constraints.DecimalMin
 import javax.validation.constraints.Digits
-import javax.validation.constraints.NotEmpty
 
 /**
  *
@@ -49,7 +48,7 @@ data class GPSLocationResponse(
 
 inline class TripId(val id: String)
 
-data class TripStartRequest(val startLocation: GPSLocationRequest, @NotEmpty val participants: Set<String>)
+data class TripStartRequest(val startLocation: GPSLocationRequest)
 
 data class TripEndRequest(val id: TripId, val endLocation: GPSLocationRequest)
 

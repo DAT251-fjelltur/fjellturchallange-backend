@@ -5,7 +5,6 @@ import no.hvl.dat251.fjelltur.dto.TripId
 import no.hvl.dat251.fjelltur.dto.TripStartRequest
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
-import no.hvl.dat251.fjelltur.model.Account
 import no.hvl.dat251.fjelltur.model.GPSLocation
 import no.hvl.dat251.fjelltur.model.Trip
 import org.junit.Test
@@ -40,13 +39,15 @@ class TripServiceTest {
   private fun startTrip(
     lat: Double = 0.0,
     long: Double = 0.0,
-    acc: Double = 0.0,
-    parts: Set<Account> = setOf(accountService.getCurrentAccount())
+    acc: Double = 0.0
   ): Trip {
     return tripService.startTrip(
       TripStartRequest(
-        GPSLocationRequest(lat.toBigDecimal(), long.toBigDecimal(), acc.toBigDecimal()),
-        parts.mapTo(mutableSetOf()) { it.id.id }
+        GPSLocationRequest(
+          lat.toBigDecimal(),
+          long.toBigDecimal(),
+          acc.toBigDecimal()
+        )
       )
     )
   }
@@ -57,8 +58,7 @@ class TripServiceTest {
     val trip = startTrip()
 
     assertEquals(1, trip.locations.size)
-    assertEquals(1, trip.participants.size)
-    assertTrue(accountService.getCurrentAccount() in trip.participants)
+    assertEquals(accountService.getCurrentAccount(), trip.account)
   }
 
   @WithMockUser(username = "TripServiceTest_createTriptwice")

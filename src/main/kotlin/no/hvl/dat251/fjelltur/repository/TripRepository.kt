@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface TripRepository : JpaRepository<Trip, String> {
 
-  fun findAllByParticipantsContainsAndOngoingTrue(participant: Account): Set<Trip>
+  fun findAllByAccountIsAndOngoingTrue(account: Account): Set<Trip>
 
-  fun existsTripByParticipantsContainsAndOngoingTrue(participant: Account): Boolean
+  fun existsTripByAccountIsAndOngoingTrue(account: Account): Boolean
 }
