@@ -48,4 +48,8 @@ class GPSLocation() {
     result = 31 * result + recordedAt.hashCode()
     return result
   }
+
+  override fun toString(): String {
+    return "GPSLocation(id=$id, latitude=$latitude, longitude=$longitude, accuracy=$accuracy, recordedAt=$recordedAt)"
+  }
 }

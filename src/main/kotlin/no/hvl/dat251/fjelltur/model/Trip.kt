@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType.EAGER
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.JoinColumn
@@ -21,7 +22,7 @@ class Trip {
   @field:Column(unique = true)
   var id: TripId = TripId("")
 
-  @field:OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+  @field:OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = EAGER)
   @field:JoinColumn(name = "trip_id")
   @field:OrderBy("recordedAt ASC")
   var locations: MutableList<GPSLocation> = mutableListOf()
@@ -30,4 +31,25 @@ class Trip {
 
   @field:ManyToMany(cascade = [CascadeType.ALL])
   var participants: MutableSet<Account> = mutableSetOf()
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Trip
+
+    if (id != other.id) return false
+    if (locations != other.locations) return false
+    if (ongoing != other.ongoing) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return id.hashCode()
+  }
+
+  override fun toString(): String {
+    return "Trip(id=$id, locations=$locations, ongoing=$ongoing)"
+  }
 }
