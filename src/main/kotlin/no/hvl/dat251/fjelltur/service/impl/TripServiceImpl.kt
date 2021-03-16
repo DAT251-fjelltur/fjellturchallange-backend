@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.Duration
+import java.time.OffsetDateTime
 
 @Service
 class TripServiceImpl(
@@ -65,9 +66,9 @@ class TripServiceImpl(
 
   override fun calculateTripDuration(trip: Trip): Duration {
     val locations = trip.locations
-    val first = locations.first()
-    val last = locations.last()
-    return Duration.between(first.recordedAt, last.recordedAt).abs()
+    val first = locations.first().recordedAt
+    val last = if (trip.ongoing) OffsetDateTime.now() else locations.last().recordedAt
+    return Duration.between(first, last).abs()
   }
 
   override fun currentTrip(): Trip? {
