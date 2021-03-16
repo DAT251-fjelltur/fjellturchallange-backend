@@ -35,7 +35,7 @@ interface TripService {
   /**
    * Find the current trip the given user is on, if any
    */
-  fun currentTrip(id: Account): Trip?
+  fun currentTrip(account: Account): Trip?
 
   /**
    * Calculate the current length of the trip

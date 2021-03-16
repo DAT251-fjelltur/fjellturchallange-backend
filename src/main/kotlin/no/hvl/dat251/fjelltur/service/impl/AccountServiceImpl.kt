@@ -70,7 +70,7 @@ class AccountServiceImpl(
           check("test" in environment.activeProfiles) { "Authentication principal cannot be a UserDetails when the 'test' profile is not active" }
           val existingAccount = getAccountByUsernameOrNull(principal.username)
           if (existingAccount != null) {
-            //This persist between tests
+            // This persist between tests
             // one fix is to add `@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)` to the test class
             return existingAccount.id
           }
