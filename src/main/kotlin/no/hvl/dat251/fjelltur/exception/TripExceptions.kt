@@ -13,3 +13,7 @@ class TripNotOngoingException(id: TripId) : RuntimeException("Trip '$id' is not 
 
 @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
 class AccountAlreadyOnTripException(account: Account) : RuntimeException("The user ${account.username} (id ${account.id}) is already on a trip")
+
+@ResponseStatus(HttpStatus.CONFLICT)
+class TooManyOngoingTripsException(account: Account) :
+  RuntimeException("THe user ${account.username} have multiple trips ongoing at the same time. Please close one or more of them.")

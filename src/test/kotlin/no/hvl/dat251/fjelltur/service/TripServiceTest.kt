@@ -4,9 +4,11 @@ import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.TripId
 import no.hvl.dat251.fjelltur.dto.TripStartRequest
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
+import no.hvl.dat251.fjelltur.exception.TooManyOngoingTripsException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.model.GPSLocation
 import no.hvl.dat251.fjelltur.model.Trip
+import no.hvl.dat251.fjelltur.repository.TripRepository
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.runner.RunWith
@@ -31,6 +33,9 @@ class TripServiceTest {
 
   @Autowired
   private lateinit var tripService: TripService
+
+  @Autowired
+  private lateinit var tripRepository: TripRepository
 
   @Autowired
   private lateinit var accountService: AccountService
@@ -78,6 +83,21 @@ class TripServiceTest {
     assertFalse(stoppedTrip.ongoing)
   }
 
+  @WithMockUser(username = "TripServiceTest_stopTrip")
+  @Test
+  fun `can start another trip after stopping it`() {
+    val trip = startTrip()
+    assertTrue(trip.ongoing)
+    val stoppedTrip = tripService.endTrip(trip)
+    assertEquals(trip.id, stoppedTrip.id)
+    assertFalse(stoppedTrip.ongoing)
+
+    val newTrip = startTrip()
+    assertNotEquals(trip.id, newTrip.id)
+    val oldTrip = assertNotNull(tripService.findTripOrNull(trip.id))
+    assertEquals(trip.id, oldTrip.id)
+  }
+
   @WithMockUser(username = "TripServiceTest_currTrip")
   @Test
   fun `Get trip of current user`() {
@@ -85,6 +105,19 @@ class TripServiceTest {
     val trip = startTrip()
     val currTrip = assertNotNull(tripService.currentTrip())
     assertEquals(trip.id, currTrip.id)
+  }
+
+  @WithMockUser(username = "TripServiceTest_currentTripTooManyTrips")
+  @Test
+  fun `current trip when multiple trips ongoing throws`() {
+    startTrip()
+
+    val anotherTrip = Trip().also {
+      it.account = accountService.getCurrentAccount()
+    }
+    tripRepository.saveAndFlush(anotherTrip)
+
+    assertThrows<TooManyOngoingTripsException> { tripService.currentTrip() }
   }
 
   @WithMockUser(username = "TripServiceTest_findExistingTrip")

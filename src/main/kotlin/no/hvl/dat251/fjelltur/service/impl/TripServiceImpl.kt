@@ -75,7 +75,7 @@ class TripServiceImpl(
   override fun currentTrip(account: Account): Trip? {
     val trips = tripRepository.findAllByAccountIsAndOngoingTrue(account)
     if (trips.size > 1) {
-      TODO("more than one trip should be handled")
+      throw TooManyOngoingTripsException(account)
     }
     return trips.firstOrNull()
   }
