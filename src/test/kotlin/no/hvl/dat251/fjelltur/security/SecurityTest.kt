@@ -36,7 +36,6 @@ class SecurityTest {
     assertEquals(setOf("test_auth", "ROLE_test"), account.authorities)
   }
 
-
   @WithMockUser
   @Test
   fun `same user is returned when getCurrentAccount`() {
