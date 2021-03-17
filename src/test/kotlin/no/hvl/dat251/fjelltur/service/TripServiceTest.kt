@@ -9,14 +9,14 @@ import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.model.GPSLocation
 import no.hvl.dat251.fjelltur.model.Trip
 import no.hvl.dat251.fjelltur.repository.TripRepository
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 import kotlin.test.assertEquals
@@ -27,7 +27,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner::class)
+@ExtendWith(SpringExtension::class)
 @SpringBootTest
 class TripServiceTest {
 
