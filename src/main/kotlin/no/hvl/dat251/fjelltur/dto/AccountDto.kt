@@ -21,8 +21,22 @@ data class RegisteredAccountResponse(
   val disabled: Boolean,
   val permissions: Set<String>
 )
+
 data class UpdatePasswordRequest(
   val oldPassword: String,
   val newPassword: String,
 )
-fun Account.toResponse(): RegisteredAccountResponse = RegisteredAccountResponse(id.toString(), username, photoUrl ?: "", score, disabled, authorities)
+
+/**
+ * Represents the Id of an account
+ */
+inline class AccountId(val id: String)
+
+fun Account.toResponse(): RegisteredAccountResponse = RegisteredAccountResponse(
+  id.id,
+  username,
+  photoUrl ?: "",
+  score,
+  disabled,
+  authorities
+)

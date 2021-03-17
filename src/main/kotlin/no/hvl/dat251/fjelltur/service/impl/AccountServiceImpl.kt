@@ -1,6 +1,7 @@
 package no.hvl.dat251.fjelltur.service.impl
 
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
+import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
 import no.hvl.dat251.fjelltur.exception.AccountUpdateFailedException
@@ -11,10 +12,12 @@ import no.hvl.dat251.fjelltur.model.Account
 import no.hvl.dat251.fjelltur.repository.AccountRepository
 import no.hvl.dat251.fjelltur.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -24,7 +27,9 @@ class AccountServiceImpl(
   @Autowired
   private val accountRepository: AccountRepository,
   @Autowired
-  private val passwordEncoder: PasswordEncoder
+  private val passwordEncoder: PasswordEncoder,
+  @Autowired
+  private val environment: Environment
 ) : AccountService {
 
   override fun createAccount(request: AccountCreationRequest): Account {
@@ -55,12 +60,26 @@ class AccountServiceImpl(
     return getAccountByUidOrNull(principal)
   }
 
-  override val loggedInUid: String get() = loggedInUidOrNull ?: throw NotLoggedInException()
-  override val loggedInUidOrNull: String?
+  override val loggedInUid: AccountId get() = loggedInUidOrNull ?: throw NotLoggedInException()
+
+  override val loggedInUidOrNull: AccountId?
     get() {
-      val uid = SecurityContextHolder.getContext().authentication.principal
-      require(uid is String?) { "JWT subject is not a string" }
-      return uid
+      return when (val principal = SecurityContextHolder.getContext().authentication.principal) {
+        is String -> AccountId(principal)
+        is UserDetails -> {
+          check("test" in environment.activeProfiles) { "Authentication principal cannot be a UserDetails when the 'test' profile is not active" }
+          val existingAccount = getAccountByUsernameOrNull(principal.username)
+          if (existingAccount != null) {
+            // This persist between tests
+            // one fix is to add `@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)` to the test class
+            return existingAccount.id
+          }
+          val account = createAccount(AccountCreationRequest(principal.username, principal.password, null))
+          account.authorities.addAll(principal.authorities.map { it.authority })
+          return accountRepository.saveAndFlush(account).id
+        }
+        else -> error("Authentication principal is not a account id or a UserDetails. It is $principal")
+      }
     }
 
   override val isLoggedIn: Boolean get() = loggedInUidOrNull != null
@@ -75,12 +94,12 @@ class AccountServiceImpl(
     return accountRepository.findAccountByUsername(username)
   }
 
-  override fun getAccountByUid(uid: String): Account {
-    return getAccountByUidOrNull(uid) ?: throw AccountNotFoundException("uid $uid")
+  override fun getAccountByUid(uid: AccountId): Account {
+    return getAccountByUidOrNull(uid) ?: throw AccountNotFoundException(uid)
   }
 
-  override fun getAccountByUidOrNull(uid: String): Account? {
-    return accountRepository.findByIdOrNull(uid)
+  override fun getAccountByUidOrNull(uid: AccountId): Account? {
+    return accountRepository.findByIdOrNull(uid.id)
   }
 
   private fun findAllAccounts(query: () -> Page<Account>): Page<Account> {
@@ -97,7 +116,7 @@ class AccountServiceImpl(
   override fun updateUser(user: Account): Account {
     val uid = user.id
 
-    if (uid == null || user.password != getAccountByUid(uid).password) {
+    if (user.password != getAccountByUid(uid).password) {
       throw AccountUpdateFailedException("Use dedicated method to update password")
     }
     return accountRepository.saveAndFlush(user)
@@ -106,7 +125,7 @@ class AccountServiceImpl(
   // TODO Test
   override fun deleteUser(username: String) {
     val account = getAccountByUsername(username)
-    accountRepository.deleteById(account.id.toString())
+    accountRepository.deleteById(account.id.id)
   }
 
   // TODO Test
@@ -125,7 +144,8 @@ class AccountServiceImpl(
     return getAccountByUsernameOrNull(username) != null
   }
 
-  companion object { // simulerer noe statisk
-    val USERNAME_REGEX = "^[a-zA-Z0-9ÆØÅæøå_-]+$".toRegex() // Account username must match this regex
+  companion object {
+    /** Account username must match this regex */
+    val USERNAME_REGEX = "^[a-zA-Z0-9ÆØÅæøå_-]+$".toRegex()
   }
 }
