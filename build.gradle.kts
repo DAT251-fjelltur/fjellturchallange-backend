@@ -9,6 +9,7 @@ plugins {
   kotlin("jvm") version "1.4.31"
   kotlin("plugin.spring") version "1.4.31"
   kotlin("plugin.jpa") version "1.4.31"
+  kotlin("plugin.allopen") version "1.4.31"
 }
 
 group = "no.hvl.dat251"
@@ -94,4 +95,7 @@ tasks.withType<Test>() {
 
 tasks.withType<JavaExec>() {
   dependsOn("spotlessApply")
+}
+allOpen{
+  annotation("javax.persistence.Entity")
 }
