@@ -30,4 +30,24 @@ class Rule {
 
   @field: Column
   var basicPoints: Int? = 0
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is Rule) return false
+
+    if (id != other.id) return false
+    if (name != other.name) return false
+    if (body != other.body) return false
+    if (basicPoints != other.basicPoints) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = id.hashCode()
+    result = 31 * result + (name?.hashCode() ?: 0)
+    result = 31 * result + (body?.hashCode() ?: 0)
+    result = 31 * result + (basicPoints ?: 0)
+    return result
+  }
 }
