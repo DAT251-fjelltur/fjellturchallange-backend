@@ -30,6 +30,7 @@ class Rule {
 
   @field: Column
   var basicPoints: Int? = 0
+<<<<<<< HEAD
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -50,4 +51,6 @@ class Rule {
     result = 31 * result + (basicPoints ?: 0)
     return result
   }
+=======
+>>>>>>> 8cc1a93f19208f5a3610130adee7ce6ee7c5edb0
 }
