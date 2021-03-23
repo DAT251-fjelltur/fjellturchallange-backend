@@ -2,6 +2,7 @@ package no.hvl.dat251.fjelltur.service.impl
 
 import no.hvl.dat251.fjelltur.dto.MakeRuleRequest
 import no.hvl.dat251.fjelltur.dto.MakeTimeRuleRequest
+import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
 import no.hvl.dat251.fjelltur.model.Rule
 import no.hvl.dat251.fjelltur.model.TimeRule
 import no.hvl.dat251.fjelltur.repository.RuleRepository
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service
 @Service
 class RuleServiceImpl(
   @Autowired val ruleRepository: RuleRepository,
-  // @Autowired val ruleService: RuleService
 ) : RuleService {
 
   override fun makeRule(request: MakeRuleRequest): Rule {
@@ -27,6 +27,9 @@ class RuleServiceImpl(
   }
 
   override fun makeTimeRule(request: MakeTimeRuleRequest): TimeRule {
+    if (ruleRepository.findAllByName(request.name) != null) {
+      throw NotUniqueRuleException()
+    }
     val rule = TimeRule()
 
     rule.name = request.name
