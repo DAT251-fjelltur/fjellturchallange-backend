@@ -39,21 +39,15 @@ class TripController(
     return tripService.startTrip(request).toTripIdOnlyResponse()
   }
 
-  @PutMapping("/{id}/update")
-  fun updateTripCoordinate(
-    @PathVariable id: TripId,
-    @Valid @RequestBody request: GPSLocationRequest
-  ) {
-    val trip = tripService.findTrip(id)
+  @PutMapping("/update")
+  fun updateTripCoordinate(@Valid @RequestBody request: GPSLocationRequest) {
+    val trip = tripService.currentTrip(accountService.getCurrentAccount())
     tripService.addGPSLocation(trip, request.toGPSLocation())
   }
 
-  @PutMapping("/{id}/stop")
-  fun endTrip(
-    @PathVariable id: TripId,
-    @Valid @RequestBody request: GPSLocationRequest
-  ): TripResponse {
-    val trip = tripService.findTrip(id)
+  @PutMapping("/stop")
+  fun endTrip(@Valid @RequestBody request: GPSLocationRequest): TripResponse {
+    val trip = tripService.currentTrip(accountService.getCurrentAccount())
     val updatedTrip = tripService.addGPSLocation(trip, request.toGPSLocation())
     return tripService.endTrip(updatedTrip).toResponse()
   }
