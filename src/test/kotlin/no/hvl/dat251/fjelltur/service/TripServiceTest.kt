@@ -2,7 +2,6 @@ package no.hvl.dat251.fjelltur.service
 
 import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.TripId
-import no.hvl.dat251.fjelltur.dto.TripStartRequest
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
 import no.hvl.dat251.fjelltur.exception.TooManyOngoingTripsException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
@@ -47,12 +46,10 @@ class TripServiceTest {
     acc: Double = 0.0
   ): Trip {
     return tripService.startTrip(
-      TripStartRequest(
-        GPSLocationRequest(
-          lat.toBigDecimal(),
-          long.toBigDecimal(),
-          acc.toBigDecimal()
-        )
+      GPSLocationRequest(
+        lat.toBigDecimal(),
+        long.toBigDecimal(),
+        acc.toBigDecimal()
       )
     )
   }

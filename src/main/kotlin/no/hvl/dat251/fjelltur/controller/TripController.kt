@@ -9,7 +9,6 @@ import no.hvl.dat251.fjelltur.dto.TripDurationResponse
 import no.hvl.dat251.fjelltur.dto.TripId
 import no.hvl.dat251.fjelltur.dto.TripIdOnlyResponse
 import no.hvl.dat251.fjelltur.dto.TripResponse
-import no.hvl.dat251.fjelltur.dto.TripStartRequest
 import no.hvl.dat251.fjelltur.dto.toResponse
 import no.hvl.dat251.fjelltur.dto.toTripDuration
 import no.hvl.dat251.fjelltur.dto.toTripIdOnlyResponse
@@ -35,7 +34,7 @@ class TripController(
 ) {
 
   @PostMapping("/start")
-  fun startTrip(@Valid @RequestBody request: TripStartRequest): TripIdOnlyResponse {
+  fun startTrip(@Valid @RequestBody request: GPSLocationRequest): TripIdOnlyResponse {
     return tripService.startTrip(request).toTripIdOnlyResponse()
   }
 

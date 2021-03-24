@@ -1,7 +1,7 @@
 package no.hvl.dat251.fjelltur.service.impl
 
+import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.TripId
-import no.hvl.dat251.fjelltur.dto.TripStartRequest
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
 import no.hvl.dat251.fjelltur.exception.NoCurrentTripException
 import no.hvl.dat251.fjelltur.exception.TooManyOngoingTripsException
@@ -25,7 +25,7 @@ class TripServiceImpl(
   @Autowired val accountService: AccountService
 ) : TripService {
 
-  override fun startTrip(request: TripStartRequest): Trip {
+  override fun startTrip(request: GPSLocationRequest): Trip {
     val account = accountService.getCurrentAccount()
 
     if (tripRepository.existsTripByAccountIsAndOngoingTrue(account)) {
@@ -34,7 +34,7 @@ class TripServiceImpl(
 
     val trip = Trip()
     trip.account = account
-    trip.locations.add(request.startLocation.toGPSLocation())
+    trip.locations.add(request.toGPSLocation())
     return tripRepository.saveAndFlush(trip)
   }
 

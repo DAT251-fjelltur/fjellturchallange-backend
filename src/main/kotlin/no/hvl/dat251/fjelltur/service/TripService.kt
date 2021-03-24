@@ -1,7 +1,7 @@
 package no.hvl.dat251.fjelltur.service
 
+import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.TripId
-import no.hvl.dat251.fjelltur.dto.TripStartRequest
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.exception.TripNotOngoingException
@@ -14,7 +14,7 @@ import java.time.Duration
 interface TripService {
 
   @ExceptionHandler(AccountNotFoundException::class)
-  fun startTrip(request: TripStartRequest): Trip
+  fun startTrip(request: GPSLocationRequest): Trip
 
   @ExceptionHandler(TripNotOngoingException::class)
   fun endTrip(trip: Trip): Trip
