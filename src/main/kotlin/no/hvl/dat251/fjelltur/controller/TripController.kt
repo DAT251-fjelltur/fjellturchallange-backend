@@ -71,7 +71,7 @@ class TripController(
   }
 
   @PreAuthorize("hasAuthority('$GET_TRIP_OF_OTHER_USER') or hasRole('$ADMIN_ROLE')")
-  @GetMapping("/find_trip")
+  @GetMapping("/current_other")
   fun getCurrentTrip(@RequestParam("id") id: AccountId): TripIdOnlyResponse {
     val account = accountService.getAccountByUid(id)
     return tripService.currentTrip(account).toTripIdOnlyResponse()
