@@ -101,9 +101,9 @@ class TripServiceTest {
   @WithMockUser(username = "TripServiceTest_currTrip")
   @Test
   fun `Get trip of current user`() {
-    assertNull(tripService.currentTrip())
+    assertNull(tripService.currentTripOrNull())
     val trip = startTrip()
-    val currTrip = assertNotNull(tripService.currentTrip())
+    val currTrip = assertNotNull(tripService.currentTripOrNull())
     assertEquals(trip.id, currTrip.id)
   }
 
@@ -117,7 +117,7 @@ class TripServiceTest {
     }
     tripRepository.saveAndFlush(anotherTrip)
 
-    assertThrows<TooManyOngoingTripsException> { tripService.currentTrip() }
+    assertThrows<TooManyOngoingTripsException> { tripService.currentTripOrNull() }
   }
 
   @WithMockUser(username = "TripServiceTest_findExistingTrip")

@@ -54,8 +54,7 @@ class TripController(
 
   @GetMapping("/{id}/info")
   fun getTrip(@PathVariable id: TripId): TripResponse {
-    val trip = tripService.findTrip(id)
-    return trip.toResponse()
+    return tripService.findTrip(id).toResponse()
   }
 
   @GetMapping("/{id}/duration")
@@ -66,13 +65,13 @@ class TripController(
 
   @PreAuthorize("hasAuthority('$GET_TRIP_OF_OTHER_USER') or hasRole('$ADMIN_ROLE')")
   @GetMapping("/current_other")
-  fun getCurrentTrip(@RequestParam("id") id: AccountId): TripIdOnlyResponse {
+  fun getCurrentTrip(@RequestParam("id") id: AccountId): TripResponse {
     val account = accountService.getAccountByUid(id)
-    return tripService.currentTrip(account).toTripIdOnlyResponse()
+    return tripService.currentTrip(account).toResponse()
   }
 
   @GetMapping("/current")
-  fun getCurrentTrip(): TripIdOnlyResponse {
-    return tripService.currentTrip(accountService.getCurrentAccount()).toTripIdOnlyResponse()
+  fun getCurrentTrip(): TripResponse {
+    return tripService.currentTrip(accountService.getCurrentAccount()).toResponse()
   }
 }
