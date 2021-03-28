@@ -42,6 +42,7 @@ class WebSecurityConfigurerAdapterImpl(
 
   override fun configure(http: HttpSecurity) {
     http.authorizeRequests()
+      .antMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
       .antMatchers(
         POST,
         "$API_VERSION_1/$ACCOUNTS_PATH/$REGISTER_PATH",

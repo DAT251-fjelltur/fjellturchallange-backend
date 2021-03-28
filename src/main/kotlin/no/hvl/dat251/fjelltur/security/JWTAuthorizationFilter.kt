@@ -2,6 +2,7 @@ package no.hvl.dat251.fjelltur.security
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.security.config.SecurityProperty
 import no.hvl.dat251.fjelltur.service.AccountService
 import org.springframework.security.authentication.AuthenticationManager
@@ -43,7 +44,7 @@ class JWTAuthorizationFilter(
       val id = JWT.require(Algorithm.HMAC512(securityProperty.secretSigningKey.toByteArray()))
         .build().verify(token.replace(TOKEN_PREFIX, "")).subject ?: return null
 
-      val account = accountService.getAccountByUidOrNull(id) ?: return null
+      val account = accountService.getAccountByUidOrNull(AccountId(id)) ?: return null
 
       return UsernamePasswordAuthenticationToken(
         id,

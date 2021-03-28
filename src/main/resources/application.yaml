@@ -2,6 +2,7 @@ server:
   port: 8091
   error:
     include-stacktrace: never
+    include-message: always
 spring:
   data:
     web:

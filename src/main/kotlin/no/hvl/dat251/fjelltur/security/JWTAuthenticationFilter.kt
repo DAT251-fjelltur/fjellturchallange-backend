@@ -57,7 +57,7 @@ class JWTAuthenticationFilter(
     val account = accountService.getAccountByUsername(principal.username)
 
     val token: String = JWT.create()
-      .withSubject(account.id)
+      .withSubject(account.id.id)
       .withExpiresAt(Date.from(Instant.now().plus(Duration.ofDays(securityProperty.maxAgeInDays))))
       .sign(Algorithm.HMAC512(securityProperty.secretSigningKey.toByteArray()))
 

@@ -5,6 +5,7 @@ import no.hvl.dat251.fjelltur.DELETE_OTHER_PERMISSION
 import no.hvl.dat251.fjelltur.GET_OTHER_PERMISSION
 import no.hvl.dat251.fjelltur.UPDATE_OTHER_USER_PERMISSION
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
+import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
 import no.hvl.dat251.fjelltur.exception.NotLoggedInException
@@ -25,9 +26,9 @@ interface AccountService {
   fun getCurrentAccountOrNull(): Account?
 
   @get:ExceptionHandler(AccountNotFoundException::class)
-  val loggedInUid: String
+  val loggedInUid: AccountId
 
-  val loggedInUidOrNull: String?
+  val loggedInUidOrNull: AccountId?
 
   val isLoggedIn: Boolean
 
@@ -37,9 +38,9 @@ interface AccountService {
 
   fun getAccountByUsernameOrNull(username: String): Account?
 
-  fun getAccountByUid(uid: String): Account
+  fun getAccountByUid(uid: AccountId): Account
 
-  fun getAccountByUidOrNull(uid: String): Account?
+  fun getAccountByUidOrNull(uid: AccountId): Account?
 
   @PreAuthorize("hasAuthority('$GET_OTHER_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun findAllByDisabled(disabled: Boolean, pageable: Pageable): Page<Account>

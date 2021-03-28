@@ -5,10 +5,10 @@ import no.hvl.dat251.fjelltur.API_VERSION_1
 import no.hvl.dat251.fjelltur.GET_OTHER_PERMISSION
 import no.hvl.dat251.fjelltur.controller.AccountController.Companion.ACCOUNTS_PATH
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
+import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.dto.RegisteredAccountResponse
 import no.hvl.dat251.fjelltur.dto.UpdatePasswordRequest
 import no.hvl.dat251.fjelltur.dto.toResponse
-import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.MissingFieldException
 import no.hvl.dat251.fjelltur.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
@@ -44,7 +44,7 @@ class AccountController(@Autowired val accountService: AccountService) {
   @PreAuthorize("hasAuthority('$GET_OTHER_PERMISSION') or hasRole('$ADMIN_ROLE')")
   @GetMapping
   fun getOtherByUsername(
-    @RequestParam("id") id: String?,
+    @RequestParam("id") id: AccountId?,
     @RequestParam("username") username: String?
   ): RegisteredAccountResponse {
     if (id != null) {
@@ -61,7 +61,7 @@ class AccountController(@Autowired val accountService: AccountService) {
   }
 
   @PutMapping("/permissions")
-  fun setPermissions(@RequestParam("id") id: String, @RequestBody permissions: List<String>): MutableSet<String> {
+  fun setPermissions(@RequestParam("id") id: AccountId, @RequestBody permissions: List<String>): MutableSet<String> {
     val account = accountService.getAccountByUid(id)
     account.authorities.clear()
     account.authorities.addAll(permissions)
@@ -71,10 +71,6 @@ class AccountController(@Autowired val accountService: AccountService) {
 
   @PostMapping("/$REGISTER_PATH")
   fun register(@Valid @RequestBody request: AccountCreationRequest): RegisteredAccountResponse {
-    if (accountService.getAccountByUsernameOrNull(request.username) != null) {
-      throw AccountCreationFailedException("Account name already taken")
-    }
-
     return accountService.createAccount(request).toResponse()
   }
 
