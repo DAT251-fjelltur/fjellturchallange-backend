@@ -47,8 +47,6 @@ dependencies {
   }
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.jetbrains.kotlin:kotlin-test")
-  testImplementation("org.mock-server:mockserver-netty:5.11.2")
-  testImplementation("org.mock-server:mockserver-client-java:5.11.2")
   testRuntimeOnly("com.h2database:h2")
 
 
