@@ -24,7 +24,7 @@ fun Rule.toRuleIdOnlyResponse(): RuleIdOnlyResponse {
 
 fun Rule.toResponse(): RegisteredRuleResponse = RegisteredRuleResponse(
   id.id,
-  basicPoints!!,
-  name!!,
+  basicPoints ?: kotlin.error("Basic points is null"),
+  name?: kotlin.error("Name is null"),
 )
 const val TIMERULE = "TIME RULE"

@@ -28,8 +28,8 @@ fun TimeRule.toTimeRuleOnlyResponse(): TimeRuleIdOnlyResponse {
 }
 fun TimeRule.toResponse(): RegisteredTimeRuleResponse = RegisteredTimeRuleResponse(
   id.id,
-  name!!,
-  body!!,
-  basicPoints!!,
-  minTime!!
+  name ?: kotlin.error("Name is null"),
+  body ?: kotlin.error("Body is null"),
+  basicPoints ?: kotlin.error("Basic points is null"),
+  minTime?: kotlin.error("Min time is null")
 )
