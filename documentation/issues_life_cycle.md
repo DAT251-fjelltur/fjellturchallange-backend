@@ -6,6 +6,13 @@ Each feature, bugfix, enchantment, documentation, etc. are issues on the GitHub 
 project. The title of an issue gives a short description of the issue. The label is what kind of issue this is. The project should always
 be `Fjelltur-challange`.
 
+## Size of issue
+
+If the issue is a minor patch no new branch must be created, it is enough to push directly to `dev`. Thus, no peer review is strictly necessary, but a verbal
+approval from another team member is recommended.
+
+However, if the issue requires lots of work (or lots of commits) a branch and the full formal reviewing is required.
+
 ## Creating a Branch for the Issue
 
 See [git branch names](./git_branch_names.md)
