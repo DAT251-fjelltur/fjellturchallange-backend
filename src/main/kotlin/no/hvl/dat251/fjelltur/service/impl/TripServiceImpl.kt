@@ -4,7 +4,6 @@ import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.TripId
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
 import no.hvl.dat251.fjelltur.exception.NoCurrentTripException
-import no.hvl.dat251.fjelltur.exception.TooManyOngoingTripsException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.exception.TripNotOngoingException
 import no.hvl.dat251.fjelltur.model.Account
@@ -74,11 +73,7 @@ class TripServiceImpl(
   }
 
   override fun currentTripOrNull(account: Account): Trip? {
-    val trips = tripRepository.findAllByAccountIsAndOngoingTrue(account)
-    if (trips.size > 1) {
-      throw TooManyOngoingTripsException(account)
-    }
-    return trips.firstOrNull()
+    return tripRepository.findAllByAccountIsAndOngoingTrue(account).firstOrNull()
   }
 
   override fun currentTrip(): Trip {
