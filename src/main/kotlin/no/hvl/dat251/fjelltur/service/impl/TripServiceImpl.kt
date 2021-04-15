@@ -27,14 +27,16 @@ class TripServiceImpl(
   override fun startTrip(request: GPSLocationRequest): Trip {
     val account = accountService.getCurrentAccount()
 
-    if (tripRepository.existsTripByAccountIsAndOngoingTrue(account)) {
-      throw AccountAlreadyOnTripException(account)
-    }
+    synchronized(SYNC_OBJECT) {
+      if (tripRepository.existsTripByAccountIsAndOngoingTrue(account)) {
+        throw AccountAlreadyOnTripException(account)
+      }
 
-    val trip = Trip()
-    trip.account = account
-    trip.locations.add(request.toGPSLocation())
-    return tripRepository.saveAndFlush(trip)
+      val trip = Trip()
+      trip.account = account
+      trip.locations.add(request.toGPSLocation())
+      return tripRepository.saveAndFlush(trip)
+    }
   }
 
   override fun endTrip(trip: Trip): Trip {
@@ -82,5 +84,9 @@ class TripServiceImpl(
 
   override fun currentTrip(account: Account): Trip {
     return currentTripOrNull(account) ?: throw NoCurrentTripException(account)
+  }
+
+  companion object {
+    val SYNC_OBJECT = Any()
   }
 }
