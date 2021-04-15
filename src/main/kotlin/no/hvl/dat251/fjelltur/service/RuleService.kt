@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 
 interface RuleService {
 
-    @ExceptionHandler(NotUniqueRuleException::class)
-    fun makeTimeRule(request: MakeTimeRuleRequest): TimeRule
+  @ExceptionHandler(NotUniqueRuleException::class)
+  fun makeTimeRule(request: MakeTimeRuleRequest): TimeRule
 
-    fun findAll(pageable: Pageable): Page<Rule>
+  fun findAll(pageable: Pageable): Page<Rule>
 }
