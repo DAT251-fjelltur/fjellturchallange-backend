@@ -8,6 +8,7 @@ import no.hvl.dat251.fjelltur.API_VERSION_1
 import no.hvl.dat251.fjelltur.GET_TRIP_OF_OTHER_USER
 import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
+import no.hvl.dat251.fjelltur.dto.TripDistanceResponse
 import no.hvl.dat251.fjelltur.dto.TripDurationResponse
 import no.hvl.dat251.fjelltur.dto.TripId
 import no.hvl.dat251.fjelltur.dto.TripIdOnlyResponse
@@ -104,6 +105,19 @@ class TripController(
   fun lengthOfTrip(@PathVariable id: TripId): TripDurationResponse {
     val trip = tripService.findTrip(id)
     return tripService.calculateTripDuration(trip).toTripDuration()
+  }
+
+  @Operation(
+    summary = "How far the account have traveled, live updated if trip is still ongoing",
+    responses = [
+      ApiResponse(responseCode = "200"),
+      ApiResponse(responseCode = "404", description = "No trip with the given id", content = [Content()]),
+    ]
+  )
+  @GetMapping("/{id}/distance")
+  fun distanceOfTrip(@PathVariable id: TripId): TripDistanceResponse {
+    val trip = tripService.findTrip(id)
+    return TripDistanceResponse(tripService.calculateTripDistance(trip))
   }
 
   @Operation(

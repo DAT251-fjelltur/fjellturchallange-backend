@@ -55,4 +55,9 @@ interface TripService {
    * Calculate the current length of the trip
    */
   fun calculateTripDuration(trip: Trip): Duration
+
+  /**
+   * Calculate distance traveled in the trip
+   */
+  fun calculateTripDistance(trip: Trip): Int
 }
