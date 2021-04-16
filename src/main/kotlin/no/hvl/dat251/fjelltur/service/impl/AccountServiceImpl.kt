@@ -40,7 +40,7 @@ class AccountServiceImpl(
       throw AccountCreationFailedException("Account username must match the regex: ${USERNAME_REGEX.pattern}")
     }
 
-    if (request.password.length < 8) {
+    if (request.password.length < MIN_PASSWORD_LENGTH) {
       throw PasswordNotSecureException("${request.username} your password is too short")
     }
 
@@ -131,7 +131,7 @@ class AccountServiceImpl(
   // TODO Test
   override fun changePassword(oldPassword: String, newPassword: String): Account {
     val acc = getCurrentAccount()
-    if (newPassword.length < 8) {
+    if (newPassword.length < MIN_PASSWORD_LENGTH) {
       throw PasswordNotSecureException("${acc.username} your password is too short")
     }
 
@@ -147,5 +147,6 @@ class AccountServiceImpl(
   companion object {
     /** Account username must match this regex */
     val USERNAME_REGEX = "^[a-zA-Z0-9ÆØÅæøå_-]+$".toRegex()
+    val MIN_PASSWORD_LENGTH = 8
   }
 }
