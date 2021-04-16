@@ -9,6 +9,7 @@ import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
 import no.hvl.dat251.fjelltur.exception.NotLoggedInException
+import no.hvl.dat251.fjelltur.exception.PasswordNotSecureException
 import no.hvl.dat251.fjelltur.model.Account
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 
 interface AccountService {
 
-  @ExceptionHandler(AccountCreationFailedException::class)
+  @ExceptionHandler(AccountCreationFailedException::class, PasswordNotSecureException::class)
   fun createAccount(request: AccountCreationRequest): Account
 
   @ExceptionHandler(NotLoggedInException::class)
@@ -34,10 +35,12 @@ interface AccountService {
 
   val isNotLoggedIn: Boolean
 
+  @ExceptionHandler(AccountNotFoundException::class)
   fun getAccountByUsername(username: String): Account
 
   fun getAccountByUsernameOrNull(username: String): Account?
 
+  @ExceptionHandler(AccountNotFoundException::class)
   fun getAccountByUid(uid: AccountId): Account
 
   fun getAccountByUidOrNull(uid: AccountId): Account?
