@@ -46,6 +46,16 @@ class Trip {
     return true
   }
 
+  /**
+   * @return Current distance of this trip in meters
+   */
+  fun calculateDistance(): Int {
+    return locations.dropLast(1).withIndex().sumByDouble { (i, location) ->
+      val next = locations[i + 1]
+      return@sumByDouble location.distanceTo(next)
+    }.toInt()
+  }
+
   override fun hashCode(): Int {
     return id.hashCode()
   }

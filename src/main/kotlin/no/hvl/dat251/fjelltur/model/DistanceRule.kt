@@ -14,15 +14,11 @@ class DistanceRule : Rule() {
   override fun calculatePoints(trip: Trip): Int {
     require(!trip.ongoing) { "Cannot calculate the points of an ongoing trip" }
 
-    val locations = trip.locations
     val minKilometers = requireNotNull(minKilometers) { "No minimum distance in kilometers found" }
     val pointsPerTime = requireNotNull(basicPoints) { "No basicPoints found" }
 
-    val totalDistance = locations.dropLast(1).withIndex().sumByDouble { (i, location) ->
-      val next = locations[i + 1]
-      return@sumByDouble location.distanceTo(next)
-    }
+    val tripDistanceKm = trip.calculateDistance() / 1000
 
-    return (totalDistance / 1000).toInt() / minKilometers * pointsPerTime
+    return tripDistanceKm / minKilometers * pointsPerTime
   }
 }
