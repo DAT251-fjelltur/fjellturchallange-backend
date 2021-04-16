@@ -3,7 +3,7 @@ package no.hvl.dat251.fjelltur.service
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
 import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
 import no.hvl.dat251.fjelltur.model.DistanceRule
-import no.hvl.dat251.fjelltur.model.GPSLocation
+import no.hvl.dat251.fjelltur.model.GPSLocationTest.Companion.createCoordinate
 import no.hvl.dat251.fjelltur.model.TimeRule
 import no.hvl.dat251.fjelltur.model.Trip
 import no.hvl.dat251.fjelltur.repository.RuleRepository
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.lang.IllegalArgumentException
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension::class)
@@ -50,34 +49,6 @@ internal class RuleServiceImplTest {
     minTime: Int = 10
   ): TimeRule {
     return ruleService.createTimeRule(CreateTimeRuleRequest(name, body, basicPoints, minTime))
-  }
-
-  private fun createCoordinate(latitude: Double, longitude: Double, accuracy: Double = 0.0): GPSLocation {
-    return GPSLocation().also {
-      it.longitude = longitude
-      it.latitude = latitude
-      it.accuracy = accuracy
-    }
-  }
-
-  @Test
-  fun `calculate correct distance of coordinates`() {
-    val coordinateOne = createCoordinate(60.3741927, 5.3350323,) // kiwi :,)
-    val coordinateTwo = createCoordinate(60.3757513, 5.3344057,) // u-matkroken :,)
-    assertEquals(176.68, coordinateOne.distanceTo(coordinateTwo), 0.1)
-  }
-
-  @Test
-  fun `calculate correct distance of coordinates transitivity`() {
-    val coordinateOne = createCoordinate(60.3741927, 5.3350323,) // kiwi :,)
-    val coordinateTwo = createCoordinate(60.3757513, 5.3344057,) // u-matkroken :,)
-    assertEquals(coordinateTwo.distanceTo(coordinateOne), coordinateOne.distanceTo(coordinateTwo), 0.0)
-  }
-
-  @Test
-  fun `calculate correct distance of same coordinates`() {
-    val coordinateOne = createCoordinate(60.3741927, 5.3350323,) // kiwi :,)
-    assertEquals(0.0, coordinateOne.distanceTo(coordinateOne), 0.0)
   }
 
   @Test
@@ -116,7 +87,6 @@ internal class RuleServiceImplTest {
 
   @Test
   fun `all fields of a distance rule are set right`() {
-
   }
 
   @Test
@@ -133,6 +103,7 @@ internal class RuleServiceImplTest {
       makeNewBasicTimeRule()
     }
   }
+
   @Test
   fun `all fields of a time rule are set right`() {
     val rule = makeNewBasicTimeRule()
