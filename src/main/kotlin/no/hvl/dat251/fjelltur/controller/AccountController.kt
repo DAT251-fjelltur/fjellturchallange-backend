@@ -41,7 +41,6 @@ class AccountController(@Autowired val accountService: AccountService) {
     return accountService.findAll(page).map { it.toResponse() }
   }
 
-  @PreAuthorize("hasAuthority('$GET_OTHER_PERMISSION') or hasRole('$ADMIN_ROLE')")
   @GetMapping
   fun getOtherByUsername(
     @RequestParam("id") id: AccountId?,

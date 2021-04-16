@@ -45,7 +45,6 @@ interface AccountService {
   @PreAuthorize("hasAuthority('$GET_OTHER_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun findAllByDisabled(disabled: Boolean, pageable: Pageable): Page<Account>
 
-  @PreAuthorize("hasAuthority('$GET_OTHER_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun findAll(pageable: Pageable): Page<Account>
 
   @PreAuthorize("hasAuthority('$UPDATE_OTHER_USER_PERMISSION') or hasRole('$ADMIN_ROLE')")
