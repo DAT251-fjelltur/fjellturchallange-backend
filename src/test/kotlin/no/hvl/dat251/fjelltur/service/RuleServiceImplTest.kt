@@ -202,10 +202,8 @@ internal class RuleServiceImplTest {
   @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
   @Test
   fun `make to rules with same name`() {
-    assertThrows<NotUniqueRuleException> {
-      makeNewBasicTimeRule()
-      makeNewBasicTimeRule()
-    }
+    makeNewBasicTimeRule()
+    assertThrows<NotUniqueRuleException> { makeNewBasicTimeRule() }
   }
 
   @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
