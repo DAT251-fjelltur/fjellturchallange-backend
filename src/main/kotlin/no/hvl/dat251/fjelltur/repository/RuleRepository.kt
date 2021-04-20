@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface RuleRepository : JpaRepository<Rule, String> {
   fun findAllByName(name: String): Rule?
+
+  fun existsRuleByName(name: String): Boolean
 }

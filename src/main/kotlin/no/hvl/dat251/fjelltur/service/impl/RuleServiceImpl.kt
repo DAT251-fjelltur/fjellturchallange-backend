@@ -18,7 +18,7 @@ class RuleServiceImpl(@Autowired val ruleRepository: RuleRepository) : RuleServi
 
   override fun createTimeRule(request: CreateTimeRuleRequest): TimeRule {
     synchronized(RULE_SYNC) {
-      if (ruleRepository.findAllByName(request.name) != null) {
+      if (ruleRepository.existsRuleByName(request.name)) {
         throw NotUniqueRuleException(request.name)
       }
       val rule = TimeRule()
@@ -38,7 +38,7 @@ class RuleServiceImpl(@Autowired val ruleRepository: RuleRepository) : RuleServi
 
   override fun createDistanceRule(request: CreateDistanceRuleRequest): DistanceRule {
     synchronized(RULE_SYNC) {
-      if (ruleRepository.findAllByName(request.name) != null) {
+      if (ruleRepository.existsRuleByName(request.name)) {
         throw NotUniqueRuleException(request.name)
       }
       val rule = DistanceRule()
