@@ -211,10 +211,15 @@ internal class RuleServiceImplTest {
   @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
   @Test
   fun `all fields of a time rule are set right`() {
-    val rule = makeNewBasicTimeRule()
-    assertEquals(rule.name, ruleRepository.findAllByName("Test_time_rule")?.name)
-    assertEquals(rule.body, ruleRepository.findAllByName("Test_time_rule")?.body)
-    assertEquals(rule.basicPoints, ruleRepository.findAllByName("Test_time_rule")?.basicPoints)
-    // TODO: Find way to test minTime
+    val ruleName = "Test_time_rule"
+    val rule = makeNewBasicTimeRule(ruleName)
+    val foundRule = assertNotNull(ruleRepository.findAllByName(ruleName))
+
+    assertTrue(foundRule is TimeRule)
+
+    assertEquals(rule.name, foundRule.name)
+    assertEquals(rule.body, foundRule.body)
+    assertEquals(rule.basicPoints, foundRule.basicPoints)
+    assertEquals(rule.minimumMinutes, foundRule.minimumMinutes)
   }
 }
