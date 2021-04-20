@@ -1,6 +1,6 @@
 package no.hvl.dat251.fjelltur
 
-const val ADMIN_ROLE = "ADMIN"
+const val ADMIN_ROLE = "ROLE_ADMIN"
 
 const val GET_OTHER_PERMISSION = "get_other"
 const val DELETE_OTHER_PERMISSION = "delete_other"
