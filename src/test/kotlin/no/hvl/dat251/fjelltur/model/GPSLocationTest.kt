@@ -2,6 +2,7 @@ package no.hvl.dat251.fjelltur.model
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.OffsetDateTime
 
 class GPSLocationTest {
 
@@ -27,11 +28,17 @@ class GPSLocationTest {
 
   companion object {
 
-    fun createCoordinate(latitude: Double, longitude: Double, accuracy: Double = 0.0): GPSLocation {
+    fun createCoordinate(
+      latitude: Double = 0.0,
+      longitude: Double = 0.0,
+      accuracy: Double = 0.0,
+      recordedAt: OffsetDateTime = OffsetDateTime.now()
+    ): GPSLocation {
       return GPSLocation().also {
         it.longitude = longitude
         it.latitude = latitude
         it.accuracy = accuracy
+        it.recordedAt = recordedAt
       }
     }
   }
