@@ -70,6 +70,10 @@ class TripServiceImpl(
     return Duration.between(first, last).abs()
   }
 
+  override fun calculateTripDistance(trip: Trip): Int {
+    return trip.calculateDistance()
+  }
+
   override fun currentTripOrNull(): Trip? {
     return currentTripOrNull(accountService.getCurrentAccount())
   }

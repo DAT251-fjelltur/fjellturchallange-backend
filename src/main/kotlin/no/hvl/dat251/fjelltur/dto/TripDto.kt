@@ -8,6 +8,7 @@ import java.time.OffsetDateTime
 import javax.validation.constraints.DecimalMax
 import javax.validation.constraints.DecimalMin
 import javax.validation.constraints.Digits
+import javax.validation.constraints.Min
 
 /**
  *
@@ -76,6 +77,8 @@ fun Trip?.toTripIdOnlyResponse(): TripIdOnlyResponse {
   return TripIdOnlyResponse(this?.id?.id)
 }
 
-data class TripDurationResponse(val seconds: Long)
+data class TripDurationResponse(@Min(0) val seconds: Long)
+
+data class TripDistanceResponse(@Min(0) val meters: Int)
 
 fun Duration.toTripDuration() = TripDurationResponse(toSeconds())

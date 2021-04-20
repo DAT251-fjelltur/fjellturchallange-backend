@@ -5,6 +5,9 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
+import kotlin.math.acos
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Entity
 class GPSLocation() {
@@ -24,6 +27,24 @@ class GPSLocation() {
 
   @field:Column(nullable = false)
   lateinit var recordedAt: OffsetDateTime
+
+  /**
+   * @return Distance from this location to the [other] locations in meters
+   */
+  fun distanceTo(other: GPSLocation): Double {
+    return if (latitude == other.latitude && longitude == other.longitude) {
+      0.0
+    } else {
+      val theta = longitude - other.longitude
+      val thislatRan = Math.toRadians(latitude)
+      val otherLatRan = Math.toRadians(other.latitude)
+      var dist = sin(thislatRan) * sin(otherLatRan) + cos(thislatRan) * cos(otherLatRan) * cos(Math.toRadians(theta))
+      dist = acos(dist)
+      dist = Math.toDegrees(dist)
+      dist *= 60 * 1.1515 * 1.609344 * 1000
+      dist
+    }
+  }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

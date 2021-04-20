@@ -14,7 +14,7 @@ import javax.persistence.InheritanceType
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "rule_type", discriminatorType = DiscriminatorType.STRING)
-class Rule {
+abstract class Rule {
 
   @field: Id
   @field: GeneratedValue(generator = "system-uuid")
@@ -30,6 +30,8 @@ class Rule {
 
   @field: Column
   var basicPoints: Int? = 0
+
+  abstract fun calculatePoints(trip: Trip): Int
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

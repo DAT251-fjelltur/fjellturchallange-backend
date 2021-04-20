@@ -1,12 +1,15 @@
 package no.hvl.dat251.fjelltur.dto
 
 import no.hvl.dat251.fjelltur.model.Rule
+import javax.validation.constraints.Min
 
-data class MakeRuleRequest(
-  val poeng: Int,
+abstract class CreateRuleRequest(
   val name: String,
-
+  val body: String,
+  @Min(1)
+  val basicPoints: Int,
 )
+
 inline class RuleId(val id: String)
 
 data class RuleIdOnlyResponse(val id: String?)
@@ -28,3 +31,4 @@ fun Rule.toResponse(): RegisteredRuleResponse = RegisteredRuleResponse(
   name ?: kotlin.error("Name is null"),
 )
 const val TIMERULE = "TIME RULE"
+const val DISTANCERULE = "DISTANCE RULE"
