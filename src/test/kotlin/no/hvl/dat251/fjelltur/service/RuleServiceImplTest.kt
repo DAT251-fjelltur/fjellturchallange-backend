@@ -1,5 +1,7 @@
 package no.hvl.dat251.fjelltur.service
 
+import no.hvl.dat251.fjelltur.ADMIN_ROLE
+import no.hvl.dat251.fjelltur.CREATE_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
 import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
 import no.hvl.dat251.fjelltur.model.DistanceRule
@@ -10,10 +12,13 @@ import no.hvl.dat251.fjelltur.repository.RuleRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
@@ -87,8 +92,10 @@ internal class RuleServiceImplTest {
 
   @Test
   fun `all fields of a distance rule are set right`() {
+
   }
 
+  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
   @Test
   fun `make new time rule`() {
     val rule = makeNewBasicTimeRule()
@@ -96,6 +103,19 @@ internal class RuleServiceImplTest {
     assertEquals(rule, ruleRepository.findAllByName("Test_time_rule"))
   }
 
+  @WithMockUser(authorities = [])
+  @Test
+  fun `cannot make time without CREATE_RULE_PERMISSION`() {
+    assertThrows<AccessDeniedException> { makeNewBasicTimeRule() }
+  }
+
+  @WithMockUser(authorities = [ADMIN_ROLE])
+  @Test
+  fun `can create time rule as admin`() {
+    assertDoesNotThrow { makeNewBasicTimeRule() }
+  }
+
+  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
   @Test
   fun `make to rules with same name`() {
     assertThrows<NotUniqueRuleException> {
@@ -104,6 +124,7 @@ internal class RuleServiceImplTest {
     }
   }
 
+  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
   @Test
   fun `all fields of a time rule are set right`() {
     val rule = makeNewBasicTimeRule()
