@@ -28,10 +28,9 @@ import javax.validation.Valid
 )
 class RuleController(@Autowired val ruleService: RuleService) {
 
-  @PostMapping("/make/time", consumes = [MediaType.APPLICATION_JSON_VALUE])
-  @PostMapping("/create/time")
-  fun makeTime(@Valid @RequestBody request: MakeTimeRuleRequest): TimeRuleIdOnlyResponse {
-    return ruleService.makeTimeRule(request).toTimeRuleOnlyResponse()
+  @PostMapping("/create/time", consumes = [MediaType.APPLICATION_JSON_VALUE])
+  fun makeTime(@Valid @RequestBody request: CreateTimeRuleRequest): TimeRuleIdOnlyResponse {
+    return ruleService.createTimeRule(request).toTimeRuleOnlyResponse()
   }
 
   @GetMapping("/getAll")
