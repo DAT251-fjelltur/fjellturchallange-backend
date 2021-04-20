@@ -1,5 +1,11 @@
 name: Run Gradle on PRs
-on: pull_request
+on:
+  pull_request: 
+    branches:
+      - dev
+  push:
+    branches:
+      - dev
 jobs:
   gradle:
     runs-on: [ ubuntu-latest ]
