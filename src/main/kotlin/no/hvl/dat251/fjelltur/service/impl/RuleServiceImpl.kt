@@ -17,17 +17,19 @@ import org.springframework.stereotype.Service
 class RuleServiceImpl(@Autowired val ruleRepository: RuleRepository) : RuleService {
 
   override fun createTimeRule(request: CreateTimeRuleRequest): TimeRule {
-    if (ruleRepository.findAllByName(request.name) != null) {
-      throw NotUniqueRuleException()
+    synchronized(RULE_SYNC) {
+      if (ruleRepository.findAllByName(request.name) != null) {
+        throw NotUniqueRuleException(request.name)
+      }
+      val rule = TimeRule()
+
+      rule.name = request.name
+      rule.body = request.body
+      rule.basicPoints = request.basicPoints
+      rule.minimumMinutes = request.minimumMinutes
+
+      return ruleRepository.saveAndFlush(rule)
     }
-    val rule = TimeRule()
-
-    rule.name = request.name
-    rule.body = request.body
-    rule.basicPoints = request.basicPoints
-    rule.minimumMinutes = request.minimumMinutes
-
-    return ruleRepository.saveAndFlush(rule)
   }
 
   private fun findAllRules(query: () -> Page<Rule>): Page<Rule> {
@@ -35,18 +37,24 @@ class RuleServiceImpl(@Autowired val ruleRepository: RuleRepository) : RuleServi
   }
 
   override fun createDistanceRule(request: CreateDistanceRuleRequest): DistanceRule {
-    if (ruleRepository.findAllByName(request.name) != null) {
-      throw NotUniqueRuleException()
+    synchronized(RULE_SYNC) {
+      if (ruleRepository.findAllByName(request.name) != null) {
+        throw NotUniqueRuleException(request.name)
+      }
+      val rule = DistanceRule()
+
+      rule.name = request.name
+      rule.body = request.body
+      rule.basicPoints = request.basicPoints
+      rule.minKilometers = request.minKilometers
+
+      return ruleRepository.saveAndFlush(rule)
     }
-    val rule = DistanceRule()
-
-    rule.name = request.name
-    rule.body = request.body
-    rule.basicPoints = request.basicPoints
-    rule.minKilometers = request.minKilometers
-
-    return ruleRepository.saveAndFlush(rule)
   }
 
   override fun findAll(pageable: Pageable) = findAllRules { ruleRepository.findAll(pageable) }
+
+  companion object {
+    val RULE_SYNC = Any()
+  }
 }
