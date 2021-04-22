@@ -6,11 +6,11 @@ import no.hvl.dat251.fjelltur.GET_OTHER_PERMISSION
 import no.hvl.dat251.fjelltur.UPDATE_OTHER_USER_PERMISSION
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
 import no.hvl.dat251.fjelltur.dto.AccountId
+import no.hvl.dat251.fjelltur.entity.Account
 import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
 import no.hvl.dat251.fjelltur.exception.NotLoggedInException
 import no.hvl.dat251.fjelltur.exception.PasswordNotSecureException
-import no.hvl.dat251.fjelltur.entity.Account
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize

@@ -10,7 +10,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Entity
-class GPSLocation() {
+class GPSLocation {
 
   @field:Id
   @field:GeneratedValue
