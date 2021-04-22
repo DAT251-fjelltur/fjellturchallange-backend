@@ -1,16 +1,18 @@
 package no.hvl.dat251.fjelltur.service
 
 import no.hvl.dat251.fjelltur.ADMIN_ROLE
-import no.hvl.dat251.fjelltur.CREATE_RULE_PERMISSION
+import no.hvl.dat251.fjelltur.CRUD_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
-import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
 import no.hvl.dat251.fjelltur.entity.TimeRule
 import no.hvl.dat251.fjelltur.entity.Trip
+import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
+import no.hvl.dat251.fjelltur.exception.UnknownRuleNameException
 import no.hvl.dat251.fjelltur.repository.RuleRepository
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -133,7 +135,7 @@ internal class RuleServiceImplTest {
     assertEquals(2, distanceRule.calculatePoints(trip))
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `disallow different rules with the same name`() {
     val ruleName = "test"
@@ -141,7 +143,7 @@ internal class RuleServiceImplTest {
     assertThrows<NotUniqueRuleException> { makeNewBasicTimeRule(ruleName) }
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `create distance rule`() {
     val ruleName = "Test_distance_rule"
@@ -150,7 +152,7 @@ internal class RuleServiceImplTest {
     assertEquals(rule, ruleRepository.findAllByName(ruleName))
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `all fields of a distance rule are set right`() {
     val ruleName = "Test_dist"
@@ -166,7 +168,7 @@ internal class RuleServiceImplTest {
     assertEquals(rule.minKilometers, minKm)
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `make new time rule`() {
     val ruleName = "Test_time_rule"
@@ -199,14 +201,14 @@ internal class RuleServiceImplTest {
     assertDoesNotThrow { makeNewBasicDistanceRule() }
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `make to rules with same name`() {
     makeNewBasicTimeRule()
     assertThrows<NotUniqueRuleException> { makeNewBasicTimeRule() }
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `all fields of a time rule are set right`() {
     val ruleName = "Test_time_rule"
@@ -219,5 +221,27 @@ internal class RuleServiceImplTest {
     assertEquals(rule.body, foundRule.body)
     assertEquals(rule.basicPoints, foundRule.basicPoints)
     assertEquals(rule.minimumMinutes, foundRule.minimumMinutes)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `throws when rule do not exists`() {
+    val ruleName = "Test_time_rule"
+
+    assertThrows<UnknownRuleNameException> {
+      ruleService.deleteRule(ruleName)
+    }
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `delete rule existing rule works`() {
+    val ruleName = "Test_time_rule"
+    makeNewBasicTimeRule(ruleName)
+    assertDoesNotThrow {
+      assertTrue(ruleRepository.existsRuleByName(ruleName))
+      ruleService.deleteRule(ruleName)
+      assertFalse(ruleRepository.existsRuleByName(ruleName))
+    }
   }
 }

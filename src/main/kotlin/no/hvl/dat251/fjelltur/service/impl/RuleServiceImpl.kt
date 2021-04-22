@@ -2,16 +2,18 @@ package no.hvl.dat251.fjelltur.service.impl
 
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
-import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.entity.TimeRule
+import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
+import no.hvl.dat251.fjelltur.exception.UnknownRuleNameException
 import no.hvl.dat251.fjelltur.repository.RuleRepository
 import no.hvl.dat251.fjelltur.service.RuleService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import javax.transaction.Transactional
 
 @Service
 class RuleServiceImpl(@Autowired val ruleRepository: RuleRepository) : RuleService {
@@ -53,6 +55,16 @@ class RuleServiceImpl(@Autowired val ruleRepository: RuleRepository) : RuleServi
   }
 
   override fun findAll(pageable: Pageable) = findAllRules { ruleRepository.findAll(pageable) }
+
+  @Transactional
+  override fun deleteRule(name: String) {
+    synchronized(RULE_SYNC) {
+      if (!ruleRepository.existsRuleByName(name)) {
+        throw UnknownRuleNameException(name)
+      }
+      ruleRepository.deleteRuleByName(name)
+    }
+  }
 
   companion object {
     val RULE_SYNC = Any()

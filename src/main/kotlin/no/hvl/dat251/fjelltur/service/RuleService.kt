@@ -1,7 +1,7 @@
 package no.hvl.dat251.fjelltur.service
 
 import no.hvl.dat251.fjelltur.ADMIN_ROLE
-import no.hvl.dat251.fjelltur.CREATE_RULE_PERMISSION
+import no.hvl.dat251.fjelltur.CRUD_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
 import no.hvl.dat251.fjelltur.entity.DistanceRule
@@ -13,11 +13,14 @@ import org.springframework.security.access.prepost.PreAuthorize
 
 interface RuleService {
 
-  @PreAuthorize("hasAuthority('$CREATE_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
+  @PreAuthorize("hasAuthority('$CRUD_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun createTimeRule(request: CreateTimeRuleRequest): TimeRule
 
-  @PreAuthorize("hasAuthority('$CREATE_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
+  @PreAuthorize("hasAuthority('$CRUD_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun createDistanceRule(request: CreateDistanceRuleRequest): DistanceRule
 
   fun findAll(pageable: Pageable): Page<Rule>
+
+  @PreAuthorize("hasAuthority('$CRUD_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
+  fun deleteRule(name: String)
 }
