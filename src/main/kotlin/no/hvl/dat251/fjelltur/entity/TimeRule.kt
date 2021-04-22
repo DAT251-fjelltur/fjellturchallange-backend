@@ -13,16 +13,12 @@ class TimeRule : Rule() {
   var minimumMinutes: Int? = null
 
   override fun calculatePoints(trip: Trip): Int {
-    // invariant: trip is closed
-    require(!trip.ongoing) { "Cannot calculate the points of an ongoing trip" }
 
     val minMinutes = requireNotNull(minimumMinutes) { "No minimum time in minutes found" }
     val pointsPerTime = requireNotNull(basicPoints) { "No basicPoints found" }
 
     val begin = trip.locations.first().recordedAt
     val end = trip.locations.last().recordedAt
-
-    require(begin !== end)
 
     val duration = Duration.between(begin, end)
 
