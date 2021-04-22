@@ -4,8 +4,8 @@ import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.TripId
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
-import no.hvl.dat251.fjelltur.model.GPSLocation
-import no.hvl.dat251.fjelltur.model.Trip
+import no.hvl.dat251.fjelltur.entity.GPSLocation
+import no.hvl.dat251.fjelltur.entity.Trip
 import no.hvl.dat251.fjelltur.repository.TripRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow

@@ -1,6 +1,6 @@
 package no.hvl.dat251.fjelltur.dto
 
-import no.hvl.dat251.fjelltur.model.Rule
+import no.hvl.dat251.fjelltur.entity.Rule
 import javax.validation.constraints.Min
 
 abstract class CreateRuleRequest(

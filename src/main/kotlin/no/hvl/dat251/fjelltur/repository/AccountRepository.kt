@@ -1,6 +1,6 @@
 package no.hvl.dat251.fjelltur.repository
 
-import no.hvl.dat251.fjelltur.model.Account
+import no.hvl.dat251.fjelltur.entity.Account
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

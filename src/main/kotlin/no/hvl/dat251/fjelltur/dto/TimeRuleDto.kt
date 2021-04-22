@@ -1,6 +1,6 @@
 package no.hvl.dat251.fjelltur.dto
 
-import no.hvl.dat251.fjelltur.model.TimeRule
+import no.hvl.dat251.fjelltur.entity.TimeRule
 import javax.validation.constraints.Min
 
 class CreateTimeRuleRequest(

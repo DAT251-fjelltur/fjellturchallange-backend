@@ -1,6 +1,6 @@
 package no.hvl.dat251.fjelltur.dto
 
-import no.hvl.dat251.fjelltur.model.Account
+import no.hvl.dat251.fjelltur.entity.Account
 
 data class AccountCreationRequest(
   val username: String,

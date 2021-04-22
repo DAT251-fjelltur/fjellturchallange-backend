@@ -1,6 +1,6 @@
-package no.hvl.dat251.fjelltur.model
+package no.hvl.dat251.fjelltur.entity
 
-import no.hvl.dat251.fjelltur.model.GPSLocationTest.Companion.createCoordinate
+import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

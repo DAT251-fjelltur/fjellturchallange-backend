@@ -1,4 +1,4 @@
-package no.hvl.dat251.fjelltur.model
+package no.hvl.dat251.fjelltur.entity
 
 import no.hvl.dat251.fjelltur.dto.DISTANCERULE
 import javax.persistence.Column
