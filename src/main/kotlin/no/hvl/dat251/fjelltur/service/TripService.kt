@@ -7,9 +7,9 @@ import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
 import no.hvl.dat251.fjelltur.exception.NoCurrentTripException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.exception.TripNotOngoingException
-import no.hvl.dat251.fjelltur.model.Account
-import no.hvl.dat251.fjelltur.model.GPSLocation
-import no.hvl.dat251.fjelltur.model.Trip
+import no.hvl.dat251.fjelltur.entity.Account
+import no.hvl.dat251.fjelltur.entity.GPSLocation
+import no.hvl.dat251.fjelltur.entity.Trip
 import org.springframework.web.bind.annotation.ExceptionHandler
 import java.time.Duration
 

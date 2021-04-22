@@ -8,7 +8,7 @@ import no.hvl.dat251.fjelltur.exception.AccountUpdateFailedException
 import no.hvl.dat251.fjelltur.exception.InvalidCredentialsException
 import no.hvl.dat251.fjelltur.exception.NotLoggedInException
 import no.hvl.dat251.fjelltur.exception.PasswordNotSecureException
-import no.hvl.dat251.fjelltur.model.Account
+import no.hvl.dat251.fjelltur.entity.Account
 import no.hvl.dat251.fjelltur.repository.AccountRepository
 import no.hvl.dat251.fjelltur.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired

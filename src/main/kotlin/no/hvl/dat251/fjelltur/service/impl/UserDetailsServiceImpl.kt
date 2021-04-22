@@ -1,6 +1,6 @@
 package no.hvl.dat251.fjelltur.service.impl
 
-import no.hvl.dat251.fjelltur.model.Account
+import no.hvl.dat251.fjelltur.entity.Account
 import no.hvl.dat251.fjelltur.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.User

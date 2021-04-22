@@ -1,7 +1,7 @@
 package no.hvl.dat251.fjelltur.test
 
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
-import no.hvl.dat251.fjelltur.model.Account
+import no.hvl.dat251.fjelltur.entity.Account
 import no.hvl.dat251.fjelltur.service.AccountService
 
 object TestSecurityUtils {

@@ -1,6 +1,6 @@
 package no.hvl.dat251.fjelltur.dto
 
-import no.hvl.dat251.fjelltur.model.DistanceRule
+import no.hvl.dat251.fjelltur.entity.DistanceRule
 import javax.validation.constraints.Min
 
 class CreateDistanceRuleRequest(

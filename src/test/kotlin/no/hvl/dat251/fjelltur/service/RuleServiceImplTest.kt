@@ -5,10 +5,10 @@ import no.hvl.dat251.fjelltur.CREATE_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
 import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
-import no.hvl.dat251.fjelltur.model.DistanceRule
-import no.hvl.dat251.fjelltur.model.GPSLocationTest.Companion.createCoordinate
-import no.hvl.dat251.fjelltur.model.TimeRule
-import no.hvl.dat251.fjelltur.model.Trip
+import no.hvl.dat251.fjelltur.entity.DistanceRule
+import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
+import no.hvl.dat251.fjelltur.entity.TimeRule
+import no.hvl.dat251.fjelltur.entity.Trip
 import no.hvl.dat251.fjelltur.repository.RuleRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

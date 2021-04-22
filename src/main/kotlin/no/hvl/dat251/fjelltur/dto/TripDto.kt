@@ -1,7 +1,7 @@
 package no.hvl.dat251.fjelltur.dto
 
-import no.hvl.dat251.fjelltur.model.GPSLocation
-import no.hvl.dat251.fjelltur.model.Trip
+import no.hvl.dat251.fjelltur.entity.GPSLocation
+import no.hvl.dat251.fjelltur.entity.Trip
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.OffsetDateTime

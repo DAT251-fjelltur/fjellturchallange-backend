@@ -1,4 +1,4 @@
-package no.hvl.dat251.fjelltur.model
+package no.hvl.dat251.fjelltur.entity
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
