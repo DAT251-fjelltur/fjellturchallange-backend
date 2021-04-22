@@ -44,11 +44,23 @@ class TripServiceImpl(
   }
 
   override fun endTrip(trip: Trip): Trip {
-    if (!trip.ongoing) {
-      throw TripNotOngoingException(trip.id)
+    val endedTrip = synchronized(SYNC_END_TRIP_OBJECT) {
+      if (!trip.ongoing) {
+        throw TripNotOngoingException(trip.id)
+      }
+
+      trip.ongoing = false
+      return@synchronized tripRepository.saveAndFlush(trip)
     }
-    trip.ongoing = false
-    return tripRepository.saveAndFlush(trip)
+
+    // update score of this account
+    val account = accountService.getCurrentAccount()
+    val (_, score) = tripScore(endedTrip)
+    account.score += score
+
+    accountService.updateUser(account)
+
+    return endedTrip
   }
 
   override fun addGPSLocation(trip: Trip, location: GPSLocation): Trip {
@@ -109,5 +121,6 @@ class TripServiceImpl(
 
   companion object {
     val SYNC_OBJECT = Any()
+    val SYNC_END_TRIP_OBJECT = Any()
   }
 }

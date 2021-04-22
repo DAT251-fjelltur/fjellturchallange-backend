@@ -215,4 +215,25 @@ class TripServiceTest {
     assertEquals(createdRule.id, rule?.id)
     assertEquals(2, score)
   }
+
+  @WithMockUser(username = "TripServiceTest_tripScoreAddedToAccount", authorities = [ADMIN_ROLE])
+  @Test
+  fun `Account get score when ending trip`() {
+    val trip = startTrip()
+    // add a new location one minute in the future
+    trip.locations.add(createCoordinate(recordedAt = trip.locations.first().recordedAt.plusMinutes(1)))
+    val basicPoints = 6
+    val createdRule = ruleService.createTimeRule(CreateTimeRuleRequest("test", "", basicPoints, 1))
+
+    val (rule, score) = assertDoesNotThrow { tripService.tripScore(trip) }
+
+    assertEquals(createdRule.id, rule?.id)
+    assertEquals(basicPoints, score)
+
+    assertEquals(0f, accountService.getCurrentAccount().score)
+
+    tripService.endTrip(trip)
+
+    assertEquals(basicPoints.toFloat(), accountService.getCurrentAccount().score)
+  }
 }
