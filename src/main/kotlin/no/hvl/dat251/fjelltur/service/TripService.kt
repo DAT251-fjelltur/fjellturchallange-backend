@@ -9,7 +9,6 @@ import no.hvl.dat251.fjelltur.entity.Trip
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
 import no.hvl.dat251.fjelltur.exception.NoCurrentTripException
-import no.hvl.dat251.fjelltur.exception.NoRulesDefinedException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.exception.TripNotOngoingException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -63,6 +62,5 @@ interface TripService {
    */
   fun calculateTripDistance(trip: Trip): Int
 
-  @ExceptionHandler(NoRulesDefinedException::class)
-  fun tripScore(trip: Trip): Pair<Rule, Int>
+  fun tripScore(trip: Trip): Pair<Rule?, Int>
 }

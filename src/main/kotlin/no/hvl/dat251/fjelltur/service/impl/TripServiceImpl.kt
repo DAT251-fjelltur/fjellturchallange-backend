@@ -8,7 +8,6 @@ import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.entity.Trip
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
 import no.hvl.dat251.fjelltur.exception.NoCurrentTripException
-import no.hvl.dat251.fjelltur.exception.NoRulesDefinedException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.exception.TripNotOngoingException
 import no.hvl.dat251.fjelltur.repository.TripRepository
@@ -95,11 +94,11 @@ class TripServiceImpl(
     return currentTripOrNull(account) ?: throw NoCurrentTripException(account)
   }
 
-  override fun tripScore(trip: Trip): Pair<Rule, Int> {
+  override fun tripScore(trip: Trip): Pair<Rule?, Int> {
 
     val rules = ruleService.findAll(Pageable.unpaged())
     if (rules.isEmpty) {
-      throw NoRulesDefinedException()
+      return null to 0
     }
     val optional = rules.stream().map { it to it.calculatePoints(trip) }.max { (_, i), (_, j) -> i.compareTo(j) }
     if (optional.isEmpty) {

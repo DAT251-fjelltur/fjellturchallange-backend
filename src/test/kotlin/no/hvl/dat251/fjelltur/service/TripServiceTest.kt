@@ -8,9 +8,10 @@ import no.hvl.dat251.fjelltur.entity.GPSLocation
 import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
 import no.hvl.dat251.fjelltur.entity.Trip
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
-import no.hvl.dat251.fjelltur.exception.NoRulesDefinedException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
+import no.hvl.dat251.fjelltur.repository.RuleRepository
 import no.hvl.dat251.fjelltur.repository.TripRepository
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -44,9 +45,16 @@ class TripServiceTest {
   private lateinit var accountService: AccountService
 
   @Autowired
-  lateinit var ruleService: RuleService
+  private lateinit var ruleService: RuleService
 
-  @WithMockUser(username = "TripServiceTest_startTrip")
+  @Autowired
+  private lateinit var ruleRepository: RuleRepository
+
+  @BeforeEach
+  fun beforeEach() {
+    ruleRepository.deleteAll()
+  }
+
   private fun startTrip(
     lat: Double = 0.0,
     long: Double = 0.0,
@@ -174,7 +182,7 @@ class TripServiceTest {
   @Test
   fun `calculate trip score no rules`() {
     val trip = startTrip()
-    assertThrows<NoRulesDefinedException> { tripService.tripScore(trip) }
+    assertEquals(null to 0, tripService.tripScore(trip))
   }
 
   @WithMockUser(username = "TripServiceTest_tripScoreSingleRules", authorities = [ADMIN_ROLE])
@@ -188,7 +196,7 @@ class TripServiceTest {
 
     val (rule, score) = assertDoesNotThrow { tripService.tripScore(trip) }
 
-    assertEquals(createdRule.id, rule.id)
+    assertEquals(createdRule.id, rule?.id)
     assertEquals(basicPoints, score)
   }
 
@@ -204,7 +212,7 @@ class TripServiceTest {
 
     val (rule, score) = assertDoesNotThrow { tripService.tripScore(trip) }
 
-    assertEquals(createdRule.id, rule.id)
+    assertEquals(createdRule.id, rule?.id)
     assertEquals(2, score)
   }
 }

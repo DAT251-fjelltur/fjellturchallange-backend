@@ -100,14 +100,12 @@ class TripController(
     responses = [
       ApiResponse(responseCode = "200"),
       ApiResponse(responseCode = "404", description = "No trip with the given id", content = [Content()]),
-      ApiResponse(responseCode = "422", description = "There are no rules to score the trip", content = [Content()]),
     ]
   )
   @GetMapping("/{id}/score")
   fun tripScore(@PathVariable id: TripId): TripScoreResponse {
     val (rule, score) = tripService.tripScore(tripService.findTrip(id))
-    val ruleName = rule.name ?: error("Rule ${rule.id} does not have a name defined")
-    return TripScoreResponse(ruleName, score.toFloat())
+    return TripScoreResponse(rule?.name, score.toFloat())
   }
 
   @Operation(

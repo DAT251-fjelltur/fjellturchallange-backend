@@ -9,6 +9,3 @@ import org.springframework.web.bind.annotation.ResponseStatus
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 class NotUniqueRuleException(name: String) : RuntimeException("There is already a rule with the name: '$name'")
-
-@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-class NoRulesDefinedException : RuntimeException("There are no rules defined")
