@@ -81,4 +81,6 @@ data class TripDurationResponse(@Min(0) val seconds: Long)
 
 data class TripDistanceResponse(@Min(0) val meters: Int)
 
+data class TripScoreResponse(val rule: String, val score: Float)
+
 fun Duration.toTripDuration() = TripDurationResponse(toSeconds())

@@ -1,11 +1,15 @@
 package no.hvl.dat251.fjelltur.service
 
+import no.hvl.dat251.fjelltur.ADMIN_ROLE
+import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
 import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.TripId
-import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
-import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.entity.GPSLocation
+import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
 import no.hvl.dat251.fjelltur.entity.Trip
+import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
+import no.hvl.dat251.fjelltur.exception.NoRulesDefinedException
+import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.repository.TripRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -38,6 +42,9 @@ class TripServiceTest {
 
   @Autowired
   private lateinit var accountService: AccountService
+
+  @Autowired
+  lateinit var ruleService: RuleService
 
   @WithMockUser(username = "TripServiceTest_startTrip")
   private fun startTrip(
@@ -161,5 +168,43 @@ class TripServiceTest {
   fun `calculate trip duration ongoing`() {
     val trip = startTrip()
     assertNotEquals(Duration.ZERO, tripService.calculateTripDuration(trip))
+  }
+
+  @WithMockUser(username = "TripServiceTest_tripScoreNoRules")
+  @Test
+  fun `calculate trip score no rules`() {
+    val trip = startTrip()
+    assertThrows<NoRulesDefinedException> { tripService.tripScore(trip) }
+  }
+
+  @WithMockUser(username = "TripServiceTest_tripScoreSingleRules", authorities = [ADMIN_ROLE])
+  @Test
+  fun `calculate trip score with rules`() {
+    val trip = startTrip()
+    // add a new location one minute in the future
+    trip.locations.add(createCoordinate(recordedAt = trip.locations.first().recordedAt.plusMinutes(1)))
+    val basicPoints = 6
+    val createdRule = ruleService.createTimeRule(CreateTimeRuleRequest("test", "", basicPoints, 1))
+
+    val (rule, score) = assertDoesNotThrow { tripService.tripScore(trip) }
+
+    assertEquals(createdRule.id, rule.id)
+    assertEquals(basicPoints, score)
+  }
+
+  @WithMockUser(username = "TripServiceTest_tripScoreMultipleRules", authorities = [ADMIN_ROLE])
+  @Test
+  fun `calculated score is the rule with the most points to give`() {
+    val trip = startTrip()
+    // add a new location one minute in the future
+    trip.locations.add(createCoordinate(recordedAt = trip.locations.first().recordedAt.plusMinutes(1)))
+
+    ruleService.createTimeRule(CreateTimeRuleRequest("test", "", 1, 1))
+    val createdRule = ruleService.createTimeRule(CreateTimeRuleRequest("test2", "", 2, 1))
+
+    val (rule, score) = assertDoesNotThrow { tripService.tripScore(trip) }
+
+    assertEquals(createdRule.id, rule.id)
+    assertEquals(2, score)
   }
 }
