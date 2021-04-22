@@ -3,7 +3,6 @@ package no.hvl.dat251.fjelltur.service
 import no.hvl.dat251.fjelltur.ADMIN_ROLE
 import no.hvl.dat251.fjelltur.DELETE_OTHER_PERMISSION
 import no.hvl.dat251.fjelltur.GET_OTHER_PERMISSION
-import no.hvl.dat251.fjelltur.UPDATE_OTHER_USER_PERMISSION
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
 import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.entity.Account
@@ -50,7 +49,6 @@ interface AccountService {
 
   fun findAll(pageable: Pageable): Page<Account>
 
-  @PreAuthorize("hasAuthority('$UPDATE_OTHER_USER_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun updateUser(user: Account): Account
 
   /**
