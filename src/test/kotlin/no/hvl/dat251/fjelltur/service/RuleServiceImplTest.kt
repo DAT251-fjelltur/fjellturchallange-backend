@@ -76,11 +76,6 @@ internal class RuleServiceImplTest {
     trip.locations = mutableListOf(coordinateOne, coordinateTwo)
     val timeRule = TimeRule()
 
-    trip.ongoing = true
-    assertThrows<IllegalArgumentException> { timeRule.calculatePoints(trip) }
-
-    trip.ongoing = false
-
     timeRule.basicPoints = 1
     timeRule.minimumMinutes = 30
     assertEquals(2, timeRule.calculatePoints(trip))
@@ -110,11 +105,6 @@ internal class RuleServiceImplTest {
     trip.locations = mutableListOf(coordinateOne, coordinateTwo)
 
     val distanceRule = DistanceRule()
-
-    trip.ongoing = true
-    assertThrows<IllegalArgumentException> { distanceRule.calculatePoints(trip) }
-
-    trip.ongoing = false
 
     distanceRule.basicPoints = 1
     distanceRule.minKilometers = 1
