@@ -4,6 +4,7 @@ import no.hvl.dat251.fjelltur.ADMIN_ROLE
 import no.hvl.dat251.fjelltur.CRUD_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
+import no.hvl.dat251.fjelltur.dto.UpdateDistanceRule
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
 import no.hvl.dat251.fjelltur.entity.TimeRule
@@ -243,5 +244,69 @@ internal class RuleServiceImplTest {
       ruleService.deleteRule(ruleName)
       assertFalse(ruleRepository.existsRuleByName(ruleName))
     }
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update distance rule that dont exists throws`() {
+    val ruleName = "Test_distance_rule"
+    val request = UpdateDistanceRule(ruleName, null, null, null)
+
+    assertThrows<UnknownRuleNameException> { ruleService.updateDistanceRule(request) }
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update distance rule with new body`() {
+    val ruleName = "Test_distance_rule"
+    val ruleBody = "This is the body"
+    val createRequest = CreateDistanceRuleRequest(ruleName, ruleBody, 1, 10)
+    ruleService.createDistanceRule(createRequest)
+    val updatedBody = "This is a new body"
+    val updateDistanceRuleRequest = UpdateDistanceRule(ruleName, updatedBody, null, null)
+    ruleService.updateDistanceRule(updateDistanceRuleRequest)
+    val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
+    assertEquals(updatedBody, updatedDistanceRule.body)
+  }
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update distance rule with new basicPoints`() {
+    val ruleName = "Test_distance_rule"
+    val ruleBody = "This is the body"
+    val createRequest = CreateDistanceRuleRequest(ruleName, ruleBody, 1, 10)
+    ruleService.createDistanceRule(createRequest)
+    val updatedBasicPoints = 20
+    val updateDistanceRuleRequest = UpdateDistanceRule(ruleName, null, updatedBasicPoints, null)
+    ruleService.updateDistanceRule(updateDistanceRuleRequest)
+    val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
+    assertEquals(updatedBasicPoints, updatedDistanceRule.basicPoints)
+  }
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update distance rule with new min kilometers`() {
+    val ruleName = "Test_distance_rule"
+    val ruleBody = "This is the body"
+    val createRequest = CreateDistanceRuleRequest(ruleName, ruleBody, 1, 10)
+    ruleService.createDistanceRule(createRequest)
+    val updatedMinKm = 2
+    val updateDistanceRuleRequest = UpdateDistanceRule(ruleName, null, null, updatedMinKm)
+    ruleService.updateDistanceRule(updateDistanceRuleRequest)
+    val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
+    assertEquals(updatedMinKm, updatedDistanceRule.minKilometers)
+  }
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update distance rule with no updated values doesn't do anything`() {
+    val ruleName = "Test_distance_rule"
+    val ruleBody = "This is the body"
+    val createRequest = CreateDistanceRuleRequest(ruleName, ruleBody, 1, 10)
+    val distanceRule = ruleService.createDistanceRule(createRequest)
+
+    val updateDistanceRuleRequest = UpdateDistanceRule(ruleName, null, null, null)
+
+    ruleService.updateDistanceRule(updateDistanceRuleRequest)
+    val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
+
+    assertEquals(distanceRule, updatedDistanceRule)
   }
 }
