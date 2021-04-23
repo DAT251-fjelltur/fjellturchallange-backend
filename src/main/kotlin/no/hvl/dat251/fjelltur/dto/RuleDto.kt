@@ -10,6 +10,13 @@ abstract class CreateRuleRequest(
   val basicPoints: Int,
 )
 
+abstract class UpdateRuleRequest(
+  val name: String,
+  val body: String?,
+  @Min(1)
+  val basicPoints: Int?,
+)
+
 inline class RuleId(val id: String)
 
 data class RuleIdOnlyResponse(val id: String?)

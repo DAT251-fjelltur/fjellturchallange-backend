@@ -17,14 +17,14 @@ class CreateDistanceRuleRequest(
  *
  * @author Mathias Skallerud Jacobsen
  */
-class UpdateDistanceRule(
-  val name: String,
-  val body: String?,
+class UpdateDistanceRuleRequest(
+  name: String,
+  body: String?,
   @Min(1)
-  val basicPoints: Int?,
+  basicPoints: Int?,
   @Min(0)
   val minKilometers: Int?
-)
+) : UpdateRuleRequest(name, body, basicPoints)
 
 data class DistanceRuleIdOnlyResponse(val id: String)
 
