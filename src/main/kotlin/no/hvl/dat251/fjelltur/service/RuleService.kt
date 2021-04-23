@@ -4,7 +4,8 @@ import no.hvl.dat251.fjelltur.ADMIN_ROLE
 import no.hvl.dat251.fjelltur.CRUD_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
-import no.hvl.dat251.fjelltur.dto.UpdateDistanceRule
+import no.hvl.dat251.fjelltur.dto.UpdateDistanceRuleRequest
+import no.hvl.dat251.fjelltur.dto.UpdateTimeRuleRequest
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.entity.TimeRule
@@ -26,5 +27,8 @@ interface RuleService {
   fun deleteRule(name: String)
 
   @PreAuthorize("hasAuthority('$CRUD_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
-  fun updateDistanceRule(request: UpdateDistanceRule): DistanceRule
+  fun updateDistanceRule(request: UpdateDistanceRuleRequest): DistanceRule
+
+  @PreAuthorize("hasAuthority('$CRUD_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
+  fun updateTimeRule(request: UpdateTimeRuleRequest): TimeRule
 }
