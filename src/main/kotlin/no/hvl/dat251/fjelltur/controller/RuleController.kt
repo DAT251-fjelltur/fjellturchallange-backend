@@ -6,6 +6,7 @@ import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
 import no.hvl.dat251.fjelltur.dto.DistanceRuleIdOnlyResponse
 import no.hvl.dat251.fjelltur.dto.RegisteredRuleResponse
 import no.hvl.dat251.fjelltur.dto.TimeRuleIdOnlyResponse
+import no.hvl.dat251.fjelltur.dto.UpdateDistanceRule
 import no.hvl.dat251.fjelltur.dto.toDistanceRuleOnlyResponse
 import no.hvl.dat251.fjelltur.dto.toResponse
 import no.hvl.dat251.fjelltur.dto.toTimeRuleOnlyResponse
@@ -17,6 +18,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -48,5 +50,10 @@ class RuleController(@Autowired val ruleService: RuleService) {
   @DeleteMapping("/delete")
   fun deleteRule(@RequestParam("name") name: String) {
     return ruleService.deleteRule(name)
+  }
+
+  @PutMapping("/update/distance")
+  fun updateDistance(@Valid @RequestBody request: UpdateDistanceRule): DistanceRuleIdOnlyResponse {
+    return ruleService.updateDistanceRule(request).toDistanceRuleOnlyResponse()
   }
 }

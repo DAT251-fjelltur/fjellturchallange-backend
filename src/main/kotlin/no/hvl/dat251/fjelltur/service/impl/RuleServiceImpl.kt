@@ -2,6 +2,7 @@ package no.hvl.dat251.fjelltur.service.impl
 
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
+import no.hvl.dat251.fjelltur.dto.UpdateDistanceRule
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.entity.TimeRule
@@ -64,6 +65,22 @@ class RuleServiceImpl(@Autowired val ruleRepository: RuleRepository) : RuleServi
       }
       ruleRepository.deleteRuleByName(name)
     }
+  }
+
+  override fun updateDistanceRule(request: UpdateDistanceRule): DistanceRule {
+    val name = request.name
+    val ruleToBeUpdated: DistanceRule = (ruleRepository.findAllByName(name) ?: throw UnknownRuleNameException(name)) as DistanceRule
+    if (request.body != null) {
+      ruleToBeUpdated.body = request.body
+    }
+    if (request.basicPoints != null) {
+      ruleToBeUpdated.basicPoints = request.basicPoints
+    }
+    if (request.minKilometers != null) {
+      ruleToBeUpdated.minKilometers = request.minKilometers
+    }
+
+    return ruleRepository.saveAndFlush(ruleToBeUpdated)
   }
 
   companion object {

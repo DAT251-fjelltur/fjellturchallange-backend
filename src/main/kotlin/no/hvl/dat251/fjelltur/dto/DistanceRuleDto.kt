@@ -12,6 +12,20 @@ class CreateDistanceRuleRequest(
   val minKilometers: Int
 ) : CreateRuleRequest(name, body, basicPoints)
 
+/**
+ * @param name can not be null as this is is used to find the distance rule to be updated
+ *
+ * @author Mathias Skallerud Jacobsen
+ */
+class UpdateDistanceRule(
+  val name: String,
+  val body: String?,
+  @Min(1)
+  val basicPoints: Int?,
+  @Min(0)
+  val minKilometers: Int?
+)
+
 data class DistanceRuleIdOnlyResponse(val id: String)
 
 data class RegisteredDistanceRuleResponse(
