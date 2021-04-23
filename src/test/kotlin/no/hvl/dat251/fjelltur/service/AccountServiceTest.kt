@@ -6,6 +6,8 @@ import no.hvl.dat251.fjelltur.UPDATE_OTHER_ACCOUNT_PERMISSION
 import no.hvl.dat251.fjelltur.entity.Account
 import no.hvl.dat251.fjelltur.exception.AccountUpdateFailedException
 import no.hvl.dat251.fjelltur.exception.InsufficientAccessException
+import no.hvl.dat251.fjelltur.exception.InvalidCredentialsException
+import no.hvl.dat251.fjelltur.exception.PasswordNotSecureException
 import no.hvl.dat251.fjelltur.test.TestSecurityUtils.createNewTestAccount
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -28,6 +31,9 @@ class AccountServiceTest {
 
   @Autowired
   private lateinit var accountService: AccountService
+
+  @Autowired
+  private lateinit var passwordEncoder: PasswordEncoder
 
   private fun testCanUpdateBasic(account: Account) {
 
@@ -199,5 +205,45 @@ class AccountServiceTest {
     curr.password = illegal
     assertThrows<AccountUpdateFailedException> { accountService.updateUser(curr) }
     assertNotEquals(illegal, accountService.getCurrentAccount().password)
+  }
+
+  // /////////////// //
+  // CHANGE PASSWORD //
+  // /////////////// //
+
+  @WithMockUser(username = "AccountServiceTest_changePassword", password = "password")
+  @Test
+  fun `change password, correct old password, legal new password`() {
+    val oldPassword = "password"
+    val curr = accountService.getCurrentAccount()
+    val newPassword = "newPassword is cool"
+    curr.password = newPassword
+    assertTrue(passwordEncoder.matches(oldPassword, accountService.getCurrentAccount().password))
+    assertDoesNotThrow { accountService.changePassword(oldPassword, newPassword) }
+    assertTrue(passwordEncoder.matches(newPassword, accountService.getCurrentAccount().password))
+  }
+
+  @WithMockUser(username = "AccountServiceTest_changePassword", password = "password")
+  @Test
+  fun `change password, incorrect old password`() {
+    val oldPassword = "password"
+    val curr = accountService.getCurrentAccount()
+    val newPassword = "blablabla123123"
+    curr.password = newPassword
+    assertTrue(passwordEncoder.matches(oldPassword, accountService.getCurrentAccount().password))
+    assertThrows<InvalidCredentialsException> { accountService.changePassword("not old password", newPassword) }
+    assertTrue(passwordEncoder.matches(oldPassword, accountService.getCurrentAccount().password))
+  }
+
+  @WithMockUser(username = "AccountServiceTest_changePassword")
+  @Test
+  fun `change password, correct old password, illegal new password`() {
+    val oldPassword = "password"
+    val curr = accountService.getCurrentAccount()
+    val newPassword = "no"
+    curr.password = newPassword
+    assertTrue(passwordEncoder.matches(oldPassword, accountService.getCurrentAccount().password))
+    assertThrows<PasswordNotSecureException> { accountService.changePassword(oldPassword, newPassword) }
+    assertTrue(passwordEncoder.matches(oldPassword, accountService.getCurrentAccount().password))
   }
 }
