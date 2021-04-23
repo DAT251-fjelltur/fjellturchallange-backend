@@ -1,5 +1,9 @@
 package no.hvl.dat251.fjelltur.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import no.hvl.dat251.fjelltur.API_VERSION_1
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
@@ -24,36 +28,59 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
+import io.swagger.v3.oas.annotations.parameters.RequestBody as SwaggerRequestBody
 
 @RestController
 @RequestMapping(
-  "$API_VERSION_1/rule",
-  produces = [MediaType.APPLICATION_JSON_VALUE]
+    "$API_VERSION_1/rule",
+    produces = [MediaType.APPLICATION_JSON_VALUE]
 )
 class RuleController(@Autowired val ruleService: RuleService) {
 
-  @PostMapping("/create/time", consumes = [MediaType.APPLICATION_JSON_VALUE])
-  fun makeTime(@Valid @RequestBody request: CreateTimeRuleRequest): TimeRuleIdOnlyResponse {
-    return ruleService.createTimeRule(request).toTimeRuleOnlyResponse()
-  }
+    @PostMapping("/create/time", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun makeTime(@Valid @RequestBody request: CreateTimeRuleRequest): TimeRuleIdOnlyResponse {
+        return ruleService.createTimeRule(request).toTimeRuleOnlyResponse()
+    }
 
-  @GetMapping("/getAll")
-  fun getAll(page: Pageable): Page<RegisteredRuleResponse> {
-    return ruleService.findAll(page).map { it.toResponse() }
-  }
+    @GetMapping("/getAll")
+    fun getAll(page: Pageable): Page<RegisteredRuleResponse> {
+        return ruleService.findAll(page).map { it.toResponse() }
+    }
 
-  @PostMapping("/create/distance")
-  fun createDistance(@Valid @RequestBody request: CreateDistanceRuleRequest): DistanceRuleIdOnlyResponse {
-    return ruleService.createDistanceRule(request).toDistanceRuleOnlyResponse()
-  }
+    @PostMapping("/create/distance")
+    fun createDistance(@Valid @RequestBody request: CreateDistanceRuleRequest): DistanceRuleIdOnlyResponse {
+        return ruleService.createDistanceRule(request).toDistanceRuleOnlyResponse()
+    }
 
-  @DeleteMapping("/delete")
-  fun deleteRule(@RequestParam("name") name: String) {
-    return ruleService.deleteRule(name)
-  }
-
-  @PutMapping("/update/distance")
-  fun updateDistance(@Valid @RequestBody request: UpdateDistanceRule): DistanceRuleIdOnlyResponse {
-    return ruleService.updateDistanceRule(request).toDistanceRuleOnlyResponse()
-  }
+    @Operation(
+        summary = "Delete a rule",
+        parameters = [Parameter(name = "name", description = "The name of the rule")],
+        responses = [
+            ApiResponse(
+                responseCode = "404",
+                description = "No rule with the given name in the database",
+                content = [Content()]
+            ),
+            ApiResponse(responseCode = "200")
+        ]
+    )
+    @DeleteMapping("/delete")
+    fun deleteRule(@RequestParam("name") name: String) {
+        return ruleService.deleteRule(name)
+    }
+    @Operation(
+        summary = "Update fields of a distance rule",
+        requestBody = SwaggerRequestBody(description = "The fields that is suppose to be updated, the fields that ase suppose to be the same can be null"),
+        responses = [
+            ApiResponse(responseCode = "200"),
+            ApiResponse(
+                responseCode = "404",
+                description = "No rule with the given name in the database",
+                content = [Content()])
+        ]
+    )
+    @PutMapping("/update/distance")
+    fun updateDistance(@Valid @RequestBody request: UpdateDistanceRule): DistanceRuleIdOnlyResponse {
+        return ruleService.updateDistanceRule(request).toDistanceRuleOnlyResponse()
+    }
 }
