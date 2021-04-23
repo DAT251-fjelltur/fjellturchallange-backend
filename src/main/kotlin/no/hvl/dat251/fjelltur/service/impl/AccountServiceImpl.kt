@@ -15,6 +15,8 @@ import no.hvl.dat251.fjelltur.exception.NotLoggedInException
 import no.hvl.dat251.fjelltur.exception.PasswordNotSecureException
 import no.hvl.dat251.fjelltur.repository.AccountRepository
 import no.hvl.dat251.fjelltur.service.AccountService
+import no.hvl.dat251.fjelltur.service.AccountService.Companion.MIN_PASSWORD_LENGTH
+import no.hvl.dat251.fjelltur.service.AccountService.Companion.USERNAME_REGEX
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.data.domain.Page
@@ -176,11 +178,5 @@ class AccountServiceImpl(
 
   override fun userExists(username: String): Boolean {
     return getAccountByUsernameOrNull(username) != null
-  }
-
-  companion object {
-    /** Account username must match this regex */
-    val USERNAME_REGEX = "^[a-zA-Z0-9ÆØÅæøå_-]+$".toRegex()
-    const val MIN_PASSWORD_LENGTH = 8
   }
 }

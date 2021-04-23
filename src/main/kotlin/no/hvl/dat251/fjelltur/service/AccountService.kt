@@ -70,4 +70,11 @@ interface AccountService {
    * Check if a user with the supplied login name exists in the system.
    */
   fun userExists(username: String): Boolean
+
+
+  companion object {
+    /** Account username must match this regex */
+    val USERNAME_REGEX = "^[a-zA-Z0-9ÆØÅæøå_-]+$".toRegex()
+    const val MIN_PASSWORD_LENGTH = 8
+  }
 }
