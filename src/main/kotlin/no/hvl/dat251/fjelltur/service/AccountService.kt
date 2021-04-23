@@ -8,6 +8,8 @@ import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.entity.Account
 import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
+import no.hvl.dat251.fjelltur.exception.AccountUpdateFailedException
+import no.hvl.dat251.fjelltur.exception.InsufficientAccessException
 import no.hvl.dat251.fjelltur.exception.NotLoggedInException
 import no.hvl.dat251.fjelltur.exception.PasswordNotSecureException
 import org.springframework.data.domain.Page
@@ -49,6 +51,7 @@ interface AccountService {
 
   fun findAll(pageable: Pageable): Page<Account>
 
+  @ExceptionHandler(InsufficientAccessException::class, AccountUpdateFailedException::class)
   fun updateUser(user: Account): Account
 
   /**
@@ -70,7 +73,6 @@ interface AccountService {
    * Check if a user with the supplied login name exists in the system.
    */
   fun userExists(username: String): Boolean
-
 
   companion object {
     /** Account username must match this regex */

@@ -130,8 +130,6 @@ class AccountServiceImpl(
 
   override fun findAll(pageable: Pageable) = findAllAccounts { accountRepository.findAll(pageable) }
 
-  // TODO make sure user only updates permitted fields
-  // TODO test
   override fun updateUser(user: Account): Account {
     val uid = user.id
     val loggedIn = getCurrentAccount()
