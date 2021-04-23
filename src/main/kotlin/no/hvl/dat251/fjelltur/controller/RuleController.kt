@@ -15,6 +15,7 @@ import no.hvl.dat251.fjelltur.dto.UpdateTimeRuleRequest
 import no.hvl.dat251.fjelltur.dto.toDistanceRuleOnlyResponse
 import no.hvl.dat251.fjelltur.dto.toResponse
 import no.hvl.dat251.fjelltur.dto.toTimeRuleOnlyResponse
+import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.service.RuleService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -102,5 +103,22 @@ class RuleController(@Autowired val ruleService: RuleService) {
   @PutMapping("/update/time")
   fun updateTime(@Valid @RequestBody request: UpdateTimeRuleRequest): TimeRuleIdOnlyResponse {
     return ruleService.updateTimeRule(request).toTimeRuleOnlyResponse()
+  }
+
+  @Operation(
+    summary = "Get a rule",
+    parameters = [Parameter(name = "name", description = "Name of the rule to get")],
+    responses = [
+      ApiResponse(responseCode = "200"),
+      ApiResponse(
+        responseCode = "404",
+        description = "No rule with the given name in the database",
+        content = [Content()]
+      )
+    ]
+  )
+  @GetMapping("/get")
+  fun getRuleByName(@RequestParam("name") name: String): Rule {
+    return ruleService.findRuleByName(name)
   }
 }

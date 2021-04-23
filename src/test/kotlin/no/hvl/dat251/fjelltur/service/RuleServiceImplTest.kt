@@ -360,4 +360,42 @@ internal class RuleServiceImplTest {
 
     assertEquals(newMinMin, newTimeRule.minimumMinutes)
   }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update time rule with no updated values doesn't do anything`() {
+    val ruleName = "Test_time_rule"
+    val ruleBody = "This is the body"
+    val createRequest = CreateTimeRuleRequest(ruleName, ruleBody, 1, 10)
+    val timeRule = ruleService.createTimeRule(createRequest)
+
+    val updateTimeRuleRequest = UpdateTimeRuleRequest(ruleName, null, null, null)
+
+    ruleService.updateTimeRule(updateTimeRuleRequest)
+    val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as TimeRule
+
+    assertEquals(timeRule, updatedDistanceRule)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `get rule throws if no rule exists`() {
+    val ruleName = "Test rule"
+    assertThrows<UnknownRuleNameException> { ruleService.findRuleByName(ruleName) }
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `get rule gets the time rule`() {
+    val ruleName = "Test time rule"
+    val body: String = "This is a testing time rule for testing"
+    val basicPoints: Int = 3
+    val minTime: Int = 10
+    makeNewBasicTimeRule(name = ruleName)
+    val getRule = ruleService.findRuleByName(ruleName) as TimeRule
+    assertEquals(ruleName, getRule.name)
+    assertEquals(body, getRule.body)
+    assertEquals(basicPoints, getRule.basicPoints)
+    assertEquals(minTime, getRule.minimumMinutes)
+  }
 }

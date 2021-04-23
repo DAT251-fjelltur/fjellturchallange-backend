@@ -104,6 +104,10 @@ class RuleServiceImpl(@Autowired val ruleRepository: RuleRepository) : RuleServi
     }
   }
 
+  override fun findRuleByName(name: String): Rule {
+    return ruleRepository.findAllByName(name) ?: throw UnknownRuleNameException(name)
+  }
+
   companion object {
     val RULE_SYNC = Any()
   }
