@@ -40,10 +40,10 @@ class AccountServiceImpl(
 
   private fun testUsername(username: String): String? {
     if (getAccountByUsernameOrNull(username) != null) {
-      return ("Account name already taken")
+      return "Account name already taken"
     }
     if (!USERNAME_REGEX.matches(username)) {
-      return ("Account username must match the regex: ${USERNAME_REGEX.pattern}")
+      return "Account username must match the regex: ${USERNAME_REGEX.pattern}"
     }
     return null
   }
