@@ -1,8 +1,8 @@
 package no.hvl.dat251.fjelltur.service.impl
 
 import no.hvl.dat251.fjelltur.ADMIN_ROLE
-import no.hvl.dat251.fjelltur.UPDATE_OTHER_USER_BASIC
-import no.hvl.dat251.fjelltur.UPDATE_OTHER_USER_PERMISSION
+import no.hvl.dat251.fjelltur.UPDATE_ACCOUNT_AUTHORITIES_PERMISSION
+import no.hvl.dat251.fjelltur.UPDATE_OTHER_ACCOUNT_PERMISSION
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
 import no.hvl.dat251.fjelltur.dto.AccountId
 import no.hvl.dat251.fjelltur.entity.Account
@@ -136,12 +136,12 @@ class AccountServiceImpl(
     val uid = user.id
     val loggedIn = getCurrentAccount()
     val isNotAdmin = ADMIN_ROLE !in loggedIn.authorities
-    if (uid != loggedInUid && isNotAdmin && UPDATE_OTHER_USER_BASIC !in loggedIn.authorities) {
+    if (uid != loggedInUid && isNotAdmin && UPDATE_OTHER_ACCOUNT_PERMISSION !in loggedIn.authorities) {
       throw InsufficientAccessException("update others accounts")
     }
 
     val updatingUser = getAccountByUid(uid)
-    if (user.authorities != updatingUser.authorities && isNotAdmin && UPDATE_OTHER_USER_PERMISSION !in loggedIn.authorities) {
+    if (user.authorities != updatingUser.authorities && isNotAdmin && UPDATE_ACCOUNT_AUTHORITIES_PERMISSION !in loggedIn.authorities) {
       throw InsufficientAccessException("update permissions of accounts")
     }
 
