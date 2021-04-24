@@ -146,4 +146,9 @@ class TripController(
   fun getCurrentTrip(): TripResponse {
     return tripService.currentTrip(accountService.getCurrentAccount()).toResponse()
   }
+
+  @GetMapping("/previous_trips")
+  fun getPreviousTrips(@RequestParam("id") id: AccountId): List<TripResponse> {
+    return tripService.findPreviousTrips(accountService.getCurrentAccount()).map { it.toResponse() }
+  }
 }
