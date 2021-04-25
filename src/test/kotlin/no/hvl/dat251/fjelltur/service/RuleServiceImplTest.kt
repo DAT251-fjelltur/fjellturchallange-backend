@@ -21,6 +21,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
@@ -86,12 +87,12 @@ internal class RuleServiceImplTest {
   ): MountainRule {
     return ruleService.createMountainRule(
       CreateMountainRuleRequest(
-        name,
-        body,
-        basicPoints,
-        minMetersTraveled,
-        radiusMeters,
-        summit
+        name = name,
+        body = body,
+        basicPoints = basicPoints,
+        minMetersTraveled = minMetersTraveled,
+        summitRadiusMeters = radiusMeters,
+        summit = summit
       )
     )
   }
@@ -259,16 +260,26 @@ internal class RuleServiceImplTest {
   @Test
   fun `all fields of a mountain rule are set right`() {
     val ruleName = "mountain yeye"
-    val rule = createMountainRule(ruleName)
-    val foundRule = assertNotNull(ruleRepository.findAllByName(ruleName))
+    val ruleBody = "mountain woo"
+    val basic = 42
+    val traveled = 22000
+    val radius = 43
+    val rule = createMountainRule(
+      name = ruleName,
+      body = ruleBody,
+      basicPoints = basic,
+      minMetersTraveled = traveled,
+      radiusMeters = radius
+    )
+    val dbRule = assertNotNull(ruleRepository.findByIdOrNull(rule.id.id))
 
-    assertTrue(foundRule is MountainRule)
+    assertTrue(dbRule is MountainRule, "was ${dbRule::class}")
 
-    assertEquals(rule.name, foundRule.name)
-    assertEquals(rule.body, foundRule.body)
-    assertEquals(rule.basicPoints, foundRule.basicPoints)
-    assertEquals(rule.minMetersTraveled, foundRule.minMetersTraveled)
-    assertEquals(rule.summitRadiusMeters, foundRule.summitRadiusMeters)
-    assertTrue(rule.summit?.equalsIgnoreTime(foundRule.summit) == true)
+    assertEquals(ruleName, dbRule.name)
+    assertEquals(ruleBody, dbRule.body)
+    assertEquals(basic, dbRule.basicPoints)
+    assertEquals(traveled, dbRule.minMetersTraveled)
+    assertEquals(radius, dbRule.summitRadiusMeters)
+    assertTrue(rule.summit?.equalsIgnoreTime(dbRule.summit) == true)
   }
 }
