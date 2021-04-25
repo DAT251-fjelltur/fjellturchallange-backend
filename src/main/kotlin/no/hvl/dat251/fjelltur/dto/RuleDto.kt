@@ -2,9 +2,12 @@ package no.hvl.dat251.fjelltur.dto
 
 import no.hvl.dat251.fjelltur.entity.Rule
 import javax.validation.constraints.Min
+import javax.validation.constraints.Size
 
 abstract class CreateRuleRequest(
+  @Size(max = 255)
   val name: String,
+  @Size(max = 1024)
   val body: String,
   @Min(1)
   val basicPoints: Int,
