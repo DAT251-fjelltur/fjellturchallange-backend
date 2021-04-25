@@ -2,17 +2,20 @@ package no.hvl.dat251.fjelltur.service.impl
 
 import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.TripId
+import no.hvl.dat251.fjelltur.entity.Account
+import no.hvl.dat251.fjelltur.entity.GPSLocation
+import no.hvl.dat251.fjelltur.entity.Rule
+import no.hvl.dat251.fjelltur.entity.Trip
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
 import no.hvl.dat251.fjelltur.exception.NoCurrentTripException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
 import no.hvl.dat251.fjelltur.exception.TripNotOngoingException
-import no.hvl.dat251.fjelltur.entity.Account
-import no.hvl.dat251.fjelltur.entity.GPSLocation
-import no.hvl.dat251.fjelltur.entity.Trip
 import no.hvl.dat251.fjelltur.repository.TripRepository
 import no.hvl.dat251.fjelltur.service.AccountService
+import no.hvl.dat251.fjelltur.service.RuleService
 import no.hvl.dat251.fjelltur.service.TripService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -21,7 +24,8 @@ import java.time.OffsetDateTime
 @Service
 class TripServiceImpl(
   @Autowired val tripRepository: TripRepository,
-  @Autowired val accountService: AccountService
+  @Autowired val accountService: AccountService,
+  @Autowired val ruleService: RuleService,
 ) : TripService {
 
   override fun startTrip(request: GPSLocationRequest): Trip {
@@ -40,11 +44,23 @@ class TripServiceImpl(
   }
 
   override fun endTrip(trip: Trip): Trip {
-    if (!trip.ongoing) {
-      throw TripNotOngoingException(trip.id)
+    val endedTrip = synchronized(SYNC_END_TRIP_OBJECT) {
+      if (!trip.ongoing) {
+        throw TripNotOngoingException(trip.id)
+      }
+
+      trip.ongoing = false
+      return@synchronized tripRepository.saveAndFlush(trip)
     }
-    trip.ongoing = false
-    return tripRepository.saveAndFlush(trip)
+
+    // update score of this account
+    val account = accountService.getCurrentAccount()
+    val (_, score) = tripScore(endedTrip)
+    account.score += score
+
+    accountService.updateUser(account)
+
+    return endedTrip
   }
 
   override fun addGPSLocation(trip: Trip, location: GPSLocation): Trip {
@@ -90,7 +106,21 @@ class TripServiceImpl(
     return currentTripOrNull(account) ?: throw NoCurrentTripException(account)
   }
 
+  override fun tripScore(trip: Trip): Pair<Rule?, Int> {
+
+    val rules = ruleService.findAll(Pageable.unpaged())
+    if (rules.isEmpty) {
+      return null to 0
+    }
+    val optional = rules.stream().map { it to it.calculatePoints(trip) }.max { (_, i), (_, j) -> i.compareTo(j) }
+    if (optional.isEmpty) {
+      throw IllegalStateException("Failed to find any applicable rules")
+    }
+    return optional.get()
+  }
+
   companion object {
     val SYNC_OBJECT = Any()
+    val SYNC_END_TRIP_OBJECT = Any()
   }
 }

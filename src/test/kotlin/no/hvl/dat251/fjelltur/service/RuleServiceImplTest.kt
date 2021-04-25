@@ -4,11 +4,11 @@ import no.hvl.dat251.fjelltur.ADMIN_ROLE
 import no.hvl.dat251.fjelltur.CREATE_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
-import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
 import no.hvl.dat251.fjelltur.entity.TimeRule
 import no.hvl.dat251.fjelltur.entity.Trip
+import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
 import no.hvl.dat251.fjelltur.repository.RuleRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -43,7 +43,7 @@ internal class RuleServiceImplTest {
     ruleRepository.deleteAll()
   }
 
-  private fun makeNewBasicTimeRule(
+  fun makeNewBasicTimeRule(
     name: String = "Test_time_rule",
     body: String = "This is a testing time rule for testing",
     basicPoints: Int = 3,
@@ -52,7 +52,7 @@ internal class RuleServiceImplTest {
     return ruleService.createTimeRule(CreateTimeRuleRequest(name, body, basicPoints, minTime))
   }
 
-  private fun makeNewBasicDistanceRule(
+  fun makeNewBasicDistanceRule(
     name: String = "Test_distance_rule",
     body: String = "This is a test distance rule",
     basicPoints: Int = 3,
@@ -75,11 +75,6 @@ internal class RuleServiceImplTest {
 
     trip.locations = mutableListOf(coordinateOne, coordinateTwo)
     val timeRule = TimeRule()
-
-    trip.ongoing = true
-    assertThrows<IllegalArgumentException> { timeRule.calculatePoints(trip) }
-
-    trip.ongoing = false
 
     timeRule.basicPoints = 1
     timeRule.minimumMinutes = 30
@@ -110,11 +105,6 @@ internal class RuleServiceImplTest {
     trip.locations = mutableListOf(coordinateOne, coordinateTwo)
 
     val distanceRule = DistanceRule()
-
-    trip.ongoing = true
-    assertThrows<IllegalArgumentException> { distanceRule.calculatePoints(trip) }
-
-    trip.ongoing = false
 
     distanceRule.basicPoints = 1
     distanceRule.minKilometers = 1

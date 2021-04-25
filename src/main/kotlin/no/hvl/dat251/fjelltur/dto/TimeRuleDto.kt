@@ -8,7 +8,7 @@ class CreateTimeRuleRequest(
   body: String,
   @Min(1)
   basicPoints: Int,
-  @Min(0)
+  @Min(1) // TODO test
   val minimumMinutes: Int
 ) : CreateRuleRequest(name, body, basicPoints)
 

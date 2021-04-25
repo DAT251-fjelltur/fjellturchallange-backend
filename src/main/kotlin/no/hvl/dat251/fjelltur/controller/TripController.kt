@@ -13,6 +13,7 @@ import no.hvl.dat251.fjelltur.dto.TripDurationResponse
 import no.hvl.dat251.fjelltur.dto.TripId
 import no.hvl.dat251.fjelltur.dto.TripIdOnlyResponse
 import no.hvl.dat251.fjelltur.dto.TripResponse
+import no.hvl.dat251.fjelltur.dto.TripScoreResponse
 import no.hvl.dat251.fjelltur.dto.toResponse
 import no.hvl.dat251.fjelltur.dto.toTripDuration
 import no.hvl.dat251.fjelltur.dto.toTripIdOnlyResponse
@@ -92,6 +93,19 @@ class TripController(
   @GetMapping("/{id}/info")
   fun getTrip(@PathVariable id: TripId): TripResponse {
     return tripService.findTrip(id).toResponse()
+  }
+
+  @Operation(
+    summary = "How many points this trip is worth",
+    responses = [
+      ApiResponse(responseCode = "200"),
+      ApiResponse(responseCode = "404", description = "No trip with the given id", content = [Content()]),
+    ]
+  )
+  @GetMapping("/{id}/score")
+  fun tripScore(@PathVariable id: TripId): TripScoreResponse {
+    val (rule, score) = tripService.tripScore(tripService.findTrip(id))
+    return TripScoreResponse(rule?.name, score.toFloat())
   }
 
   @Operation(

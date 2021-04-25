@@ -12,8 +12,6 @@ class DistanceRule : Rule() {
   var minKilometers: Int? = 0
 
   override fun calculatePoints(trip: Trip): Int {
-    require(!trip.ongoing) { "Cannot calculate the points of an ongoing trip" }
-
     val minKilometers = requireNotNull(minKilometers) { "No minimum distance in kilometers found" }
     val pointsPerTime = requireNotNull(basicPoints) { "No basicPoints found" }
 
