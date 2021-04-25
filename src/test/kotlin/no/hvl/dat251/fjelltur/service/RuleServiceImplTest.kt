@@ -3,11 +3,14 @@ package no.hvl.dat251.fjelltur.service
 import no.hvl.dat251.fjelltur.ADMIN_ROLE
 import no.hvl.dat251.fjelltur.CREATE_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
+import no.hvl.dat251.fjelltur.dto.CreateMountainRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
+import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
 import no.hvl.dat251.fjelltur.entity.TimeRule
 import no.hvl.dat251.fjelltur.entity.Trip
+import no.hvl.dat251.fjelltur.entity.rule.MountainRule
 import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
 import no.hvl.dat251.fjelltur.repository.RuleRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -59,6 +62,38 @@ internal class RuleServiceImplTest {
     minKm: Int = 10
   ): DistanceRule {
     return ruleService.createDistanceRule(CreateDistanceRuleRequest(name, body, basicPoints, minKm))
+  }
+
+  fun createGPSLocationRequest(
+    lat: Double = 0.0,
+    long: Double = 0.0,
+    acc: Double = 0.0
+  ): GPSLocationRequest {
+    return GPSLocationRequest(
+      lat.toBigDecimal(),
+      long.toBigDecimal(),
+      acc.toBigDecimal()
+    )
+  }
+
+  fun createMountainRule(
+    name: String = "mountain rule",
+    body: String = "This is a test rule",
+    basicPoints: Int = 3,
+    minMetersTraveled: Int = 2200,
+    radiusMeters: Int = 50,
+    summit: GPSLocationRequest = createGPSLocationRequest()
+  ): MountainRule {
+    return ruleService.createMountainRule(
+      CreateMountainRuleRequest(
+        name,
+        body,
+        basicPoints,
+        minMetersTraveled,
+        radiusMeters,
+        summit
+      )
+    )
   }
 
   @Test
@@ -209,5 +244,31 @@ internal class RuleServiceImplTest {
     assertEquals(rule.body, foundRule.body)
     assertEquals(rule.basicPoints, foundRule.basicPoints)
     assertEquals(rule.minimumMinutes, foundRule.minimumMinutes)
+  }
+
+  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @Test
+  fun `make new mountain rule`() {
+    val ruleName = "mountain rulez"
+    val rule = createMountainRule(ruleName)
+    assertEquals(1, ruleRepository.count())
+    assertEquals(rule, ruleRepository.findAllByName(ruleName))
+  }
+
+  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @Test
+  fun `all fields of a mountain rule are set right`() {
+    val ruleName = "mountain yeye"
+    val rule = createMountainRule(ruleName)
+    val foundRule = assertNotNull(ruleRepository.findAllByName(ruleName))
+
+    assertTrue(foundRule is MountainRule)
+
+    assertEquals(rule.name, foundRule.name)
+    assertEquals(rule.body, foundRule.body)
+    assertEquals(rule.basicPoints, foundRule.basicPoints)
+    assertEquals(rule.minMetersTraveled, foundRule.minMetersTraveled)
+    assertEquals(rule.summitRadiusMeters, foundRule.summitRadiusMeters)
+    assertTrue(rule.summit?.equalsIgnoreTime(foundRule.summit) == true)
   }
 }

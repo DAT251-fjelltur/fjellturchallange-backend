@@ -72,7 +72,7 @@ class RuleServiceImpl(
       rule.name = request.name
       rule.body = request.body
       rule.basicPoints = request.basicPoints
-      rule.radiusMeters = request.radiusMeters
+      rule.summitRadiusMeters = request.summitRadiusMeters
       rule.summit = request.summit.toGPSLocation().let { locationRepository.saveAndFlush(it) }
 
       return ruleRepository.saveAndFlush(rule)

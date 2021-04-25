@@ -14,19 +14,33 @@ class MountainRule : Rule() {
   @field:javax.persistence.ManyToOne
   var summit: GPSLocation? = null
 
-  var radiusMeters: Int? = 0
+  var summitRadiusMeters: Int = 0
+
+  var minMetersTraveled: Int = 0
 
   override fun calculatePoints(trip: Trip): Int {
 
     val summit = requireNotNull(summit) { "No summit found" }
-    val radius = requireNotNull(radiusMeters) { "No radius found" }
     val basicPoints = requireNotNull(basicPoints) { "No basicPoints found" }
 
-    for (location in trip.locations) {
-      if (summit.distanceTo(location) <= radius) {
-        return basicPoints
-      }
+    val summitIndex = trip.locations.indexOfFirst { summit.distanceTo(it) <= summitRadiusMeters }
+    if (summitIndex == -1) {
+      // Did not walk within the summit of this mountain
+      return 0
     }
-    return 0
+
+    val distanceUp = Trip.accumulatedDistance(trip.locations.take(summitIndex + 1))
+    if (distanceUp < minMetersTraveled) {
+      // travelled less than the trip requires
+      return 0
+    }
+
+    val distanceDown = Trip.accumulatedDistance(trip.locations.drop(summitIndex))
+    if (distanceDown < minMetersTraveled) {
+      // travelled less than the trip requires
+      return 0
+    }
+
+    return basicPoints
   }
 }
