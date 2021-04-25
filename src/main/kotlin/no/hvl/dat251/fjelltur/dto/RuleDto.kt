@@ -30,5 +30,7 @@ fun Rule.toResponse(): RegisteredRuleResponse = RegisteredRuleResponse(
   basicPoints ?: kotlin.error("Basic points is null"),
   name ?: kotlin.error("Name is null"),
 )
-const val TIMERULE = "TIME RULE"
-const val DISTANCERULE = "DISTANCE RULE"
+
+const val TIME_RULE = "TIME RULE"
+const val DISTANCE_RULE = "DISTANCE RULE"
+const val MOUNTAIN_RULE = "MOUNTAIN RULE"
