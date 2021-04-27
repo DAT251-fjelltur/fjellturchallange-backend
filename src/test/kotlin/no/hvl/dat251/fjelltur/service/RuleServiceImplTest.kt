@@ -437,7 +437,7 @@ internal class RuleServiceImplTest {
     assertEquals(createdRule, foundRule)
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `make new mountain rule`() {
     val ruleName = "mountain rulez"
@@ -446,7 +446,7 @@ internal class RuleServiceImplTest {
     assertEquals(rule, ruleRepository.findAllByName(ruleName))
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `all fields of a mountain rule are set right`() {
     val ruleName = "mountain yeye"

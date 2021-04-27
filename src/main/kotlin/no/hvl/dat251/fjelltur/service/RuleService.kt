@@ -25,7 +25,7 @@ interface RuleService {
   @PreAuthorize("hasAuthority('$CRUD_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun createDistanceRule(request: CreateDistanceRuleRequest): DistanceRule
 
-  @PreAuthorize("hasAuthority('$CREATE_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
+  @PreAuthorize("hasAuthority('$CRUD_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun createMountainRule(request: CreateMountainRuleRequest): MountainRule
 
   fun findAll(pageable: Pageable): Page<Rule>
