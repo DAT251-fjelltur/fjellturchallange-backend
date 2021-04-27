@@ -3,6 +3,7 @@ package no.hvl.dat251.fjelltur.dto
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.entity.TimeRule
+import no.hvl.dat251.fjelltur.entity.rule.MountainRule
 import javax.validation.constraints.Min
 import javax.validation.constraints.Size
 
@@ -41,6 +42,7 @@ fun Rule.toResponse(): RegisteredRuleResponse {
   return when (this) {
     is DistanceRule -> this.toResponse()
     is TimeRule -> this.toResponse()
+    is MountainRule -> this.toResponse()
     else -> RegisteredRuleResponse(
       id.id,
       name ?: error("Rule name is null"),

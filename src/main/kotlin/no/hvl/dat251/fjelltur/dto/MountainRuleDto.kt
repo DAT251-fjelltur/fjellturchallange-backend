@@ -25,15 +25,15 @@ class CreateMountainRuleRequest(
 
 data class MountainRuleIdOnlyResponse(val id: String)
 
-data class RegisteredMountainRuleResponse(
-  val id: String,
-  val name: String,
-  val body: String,
-  val basicPoints: Int,
+class RegisteredMountainRuleResponse(
+  id: String,
+  name: String,
+  body: String,
+  basicPoints: Int,
   val minMetersTraveled: Int,
   val summitRadiusMeters: Int,
   val summit: GPSLocationResponse
-)
+) : RegisteredRuleResponse(id, name, body, basicPoints)
 
 inline class MountainRuleId(val id: String)
 
