@@ -386,7 +386,7 @@ internal class RuleServiceImplTest {
   fun `get rule throws if no rule exists`() {
     val ruleName = "Test rule"
     assertThrows<UnknownRuleNameException> { ruleService.findRuleByName(ruleName) }
-  
+  }
   @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `throws when account not found`() {
@@ -406,6 +406,7 @@ internal class RuleServiceImplTest {
     assertEquals(body, getRule.body)
     assertEquals(basicPoints, getRule.basicPoints)
     assertEquals(minTime, getRule.minimumMinutes)
+  }
   
   @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
