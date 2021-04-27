@@ -12,15 +12,24 @@ class CreateTimeRuleRequest(
   val minimumMinutes: Int
 ) : CreateRuleRequest(name, body, basicPoints)
 
+class UpdateTimeRuleRequest(
+  name: String,
+  body: String?,
+  @Min(1)
+  basicPoints: Int?,
+  @Min(0)
+  val minimumMinutes: Int?
+) : UpdateRuleRequest(name, body, basicPoints)
+
 data class TimeRuleIdOnlyResponse(val id: String)
 
-data class RegisteredTimeRuleResponse(
-  val id: String,
-  val name: String,
-  val body: String,
-  val basicPoints: Int,
+class RegisteredTimeRuleResponse(
+  id: String,
+  name: String,
+  body: String,
+  basicPoints: Int,
   val minimumMinutes: Int,
-)
+) : RegisteredRuleResponse(id, name, body, basicPoints)
 
 inline class TimeRuleId(val id: String)
 
