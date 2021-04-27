@@ -1,10 +1,12 @@
 package no.hvl.dat251.fjelltur.service
 
 import no.hvl.dat251.fjelltur.ADMIN_ROLE
-import no.hvl.dat251.fjelltur.CREATE_RULE_PERMISSION
+import no.hvl.dat251.fjelltur.CRUD_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateMountainRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
+import no.hvl.dat251.fjelltur.dto.UpdateDistanceRuleRequest
+import no.hvl.dat251.fjelltur.dto.UpdateTimeRuleRequest
 import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
@@ -12,8 +14,10 @@ import no.hvl.dat251.fjelltur.entity.TimeRule
 import no.hvl.dat251.fjelltur.entity.Trip
 import no.hvl.dat251.fjelltur.entity.rule.MountainRule
 import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
+import no.hvl.dat251.fjelltur.exception.UnknownRuleNameException
 import no.hvl.dat251.fjelltur.repository.RuleRepository
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -159,7 +163,7 @@ internal class RuleServiceImplTest {
     assertEquals(2, distanceRule.calculatePoints(trip))
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `disallow different rules with the same name`() {
     val ruleName = "test"
@@ -167,7 +171,7 @@ internal class RuleServiceImplTest {
     assertThrows<NotUniqueRuleException> { makeNewBasicTimeRule(ruleName) }
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `create distance rule`() {
     val ruleName = "Test_distance_rule"
@@ -176,7 +180,7 @@ internal class RuleServiceImplTest {
     assertEquals(rule, ruleRepository.findAllByName(ruleName))
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `all fields of a distance rule are set right`() {
     val ruleName = "Test_dist"
@@ -192,7 +196,7 @@ internal class RuleServiceImplTest {
     assertEquals(rule.minKilometers, minKm)
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `make new time rule`() {
     val ruleName = "Test_time_rule"
@@ -225,14 +229,14 @@ internal class RuleServiceImplTest {
     assertDoesNotThrow { makeNewBasicDistanceRule() }
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `make to rules with same name`() {
     makeNewBasicTimeRule()
     assertThrows<NotUniqueRuleException> { makeNewBasicTimeRule() }
   }
 
-  @WithMockUser(authorities = [CREATE_RULE_PERMISSION])
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `all fields of a time rule are set right`() {
     val ruleName = "Test_time_rule"
@@ -245,6 +249,192 @@ internal class RuleServiceImplTest {
     assertEquals(rule.body, foundRule.body)
     assertEquals(rule.basicPoints, foundRule.basicPoints)
     assertEquals(rule.minimumMinutes, foundRule.minimumMinutes)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `throws when rule do not exists`() {
+    val ruleName = "Test_time_rule"
+
+    assertThrows<UnknownRuleNameException> {
+      ruleService.deleteRule(ruleName)
+    }
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `delete rule existing rule works`() {
+    val ruleName = "Test_time_rule"
+    makeNewBasicTimeRule(ruleName)
+    assertDoesNotThrow {
+      assertTrue(ruleRepository.existsRuleByName(ruleName))
+      ruleService.deleteRule(ruleName)
+      assertFalse(ruleRepository.existsRuleByName(ruleName))
+    }
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update distance rule that dont exists throws`() {
+    val ruleName = "Test_distance_rule"
+    val request = UpdateDistanceRuleRequest(ruleName, null, null, null)
+
+    assertThrows<UnknownRuleNameException> { ruleService.updateDistanceRule(request) }
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update distance rule with new body`() {
+    val ruleName = "Test_distance_rule"
+    val ruleBody = "This is the body"
+    val createRequest = CreateDistanceRuleRequest(ruleName, ruleBody, 1, 10)
+    ruleService.createDistanceRule(createRequest)
+    val updatedBody = "This is a new body"
+    val updateDistanceRuleRequest = UpdateDistanceRuleRequest(ruleName, updatedBody, null, null)
+    ruleService.updateDistanceRule(updateDistanceRuleRequest)
+    val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
+    assertEquals(updatedBody, updatedDistanceRule.body)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update distance rule with new basicPoints`() {
+    val ruleName = "Test_distance_rule"
+    val ruleBody = "This is the body"
+    val createRequest = CreateDistanceRuleRequest(ruleName, ruleBody, 1, 10)
+    ruleService.createDistanceRule(createRequest)
+    val updatedBasicPoints = 20
+    val updateDistanceRuleRequest = UpdateDistanceRuleRequest(ruleName, null, updatedBasicPoints, null)
+    ruleService.updateDistanceRule(updateDistanceRuleRequest)
+    val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
+    assertEquals(updatedBasicPoints, updatedDistanceRule.basicPoints)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update distance rule with new min kilometers`() {
+    val ruleName = "Test_distance_rule"
+    val ruleBody = "This is the body"
+    val createRequest = CreateDistanceRuleRequest(ruleName, ruleBody, 1, 10)
+    ruleService.createDistanceRule(createRequest)
+    val updatedMinKm = 2
+    val updateDistanceRuleRequest = UpdateDistanceRuleRequest(ruleName, null, null, updatedMinKm)
+    ruleService.updateDistanceRule(updateDistanceRuleRequest)
+    val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
+    assertEquals(updatedMinKm, updatedDistanceRule.minKilometers)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update distance rule with no updated values doesn't do anything`() {
+    val ruleName = "Test_distance_rule"
+    val ruleBody = "This is the body"
+    val createRequest = CreateDistanceRuleRequest(ruleName, ruleBody, 1, 10)
+    val distanceRule = ruleService.createDistanceRule(createRequest)
+
+    val updateDistanceRuleRequest = UpdateDistanceRuleRequest(ruleName, null, null, null)
+
+    ruleService.updateDistanceRule(updateDistanceRuleRequest)
+    val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
+
+    assertEquals(distanceRule, updatedDistanceRule)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update time rule that doesn't exist should throw`() {
+    val ruleName = "Test time rule"
+    val updateTimeRuleRequest = UpdateTimeRuleRequest(ruleName, null, null, null)
+
+    assertThrows<UnknownRuleNameException> { ruleService.updateTimeRule(updateTimeRuleRequest) }
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update time rule with new body`() {
+    val ruleName = "Test time rule"
+    makeNewBasicTimeRule(name = ruleName)
+
+    val newBody = "This is the new updated body"
+    val updateTimeRuleRequest = UpdateTimeRuleRequest(ruleName, newBody, null, null)
+
+    val newTimeRule = ruleService.updateTimeRule(updateTimeRuleRequest)
+
+    assertEquals(newBody, newTimeRule.body)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update time rule with new basic points`() {
+    val ruleName = "Test time rule"
+    makeNewBasicTimeRule(name = ruleName)
+
+    val basicPoints = 1000
+    val updateTimeRuleRequest = UpdateTimeRuleRequest(ruleName, null, basicPoints, null)
+
+    val newTimeRule = ruleService.updateTimeRule(updateTimeRuleRequest)
+
+    assertEquals(basicPoints, newTimeRule.basicPoints)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update time rule with new basic minMin`() {
+    val ruleName = "Test time rule"
+    makeNewBasicTimeRule(name = ruleName)
+
+    val newMinMin = 1000
+    val updateTimeRuleRequest = UpdateTimeRuleRequest(ruleName, null, null, newMinMin)
+
+    val newTimeRule = ruleService.updateTimeRule(updateTimeRuleRequest)
+
+    assertEquals(newMinMin, newTimeRule.minimumMinutes)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `update time rule with no updated values doesn't do anything`() {
+    val ruleName = "Test_time_rule"
+    val ruleBody = "This is the body"
+    val createRequest = CreateTimeRuleRequest(ruleName, ruleBody, 1, 10)
+    val timeRule = ruleService.createTimeRule(createRequest)
+
+    val updateTimeRuleRequest = UpdateTimeRuleRequest(ruleName, null, null, null)
+
+    ruleService.updateTimeRule(updateTimeRuleRequest)
+    val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as TimeRule
+
+    assertEquals(timeRule, updatedDistanceRule)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `throws when account not found`() {
+    assertThrows<UnknownRuleNameException> { ruleService.findByName("non-existing") }
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `get rule gets the time rule`() {
+    val ruleName = "Test time rule"
+    val body: String = "This is a testing time rule for testing"
+    val basicPoints: Int = 3
+    val minTime: Int = 10
+    makeNewBasicTimeRule(name = ruleName)
+    val getRule = ruleService.findByName(ruleName) as TimeRule
+    assertEquals(ruleName, getRule.name)
+    assertEquals(body, getRule.body)
+    assertEquals(basicPoints, getRule.basicPoints)
+    assertEquals(minTime, getRule.minimumMinutes)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `Find correct rule by name`() {
+    val ruleName = "exists"
+    val createdRule = makeNewBasicTimeRule(name = ruleName)
+    val foundRule = assertDoesNotThrow { ruleService.findByName(ruleName) }
+    assertEquals(createdRule, foundRule)
   }
 
   @WithMockUser(authorities = [CREATE_RULE_PERMISSION])

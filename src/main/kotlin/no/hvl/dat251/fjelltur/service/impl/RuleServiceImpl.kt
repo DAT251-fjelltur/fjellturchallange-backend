@@ -3,11 +3,14 @@ package no.hvl.dat251.fjelltur.service.impl
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateMountainRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
+import no.hvl.dat251.fjelltur.dto.UpdateDistanceRuleRequest
+import no.hvl.dat251.fjelltur.dto.UpdateTimeRuleRequest
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.entity.TimeRule
 import no.hvl.dat251.fjelltur.entity.rule.MountainRule
 import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
+import no.hvl.dat251.fjelltur.exception.UnknownRuleNameException
 import no.hvl.dat251.fjelltur.repository.GPSLocationRepository
 import no.hvl.dat251.fjelltur.repository.RuleRepository
 import no.hvl.dat251.fjelltur.service.RuleService
@@ -81,6 +84,56 @@ class RuleServiceImpl(
   }
 
   override fun findAll(pageable: Pageable) = findAllRules { ruleRepository.findAll(pageable) }
+
+  override fun findByName(name: String): Rule {
+    return ruleRepository.findAllByName(name) ?: throw UnknownRuleNameException(name)
+  }
+
+  @Transactional
+  override fun deleteRule(name: String) {
+    synchronized(RULE_SYNC) {
+      if (!ruleRepository.existsRuleByName(name)) {
+        throw UnknownRuleNameException(name)
+      }
+      ruleRepository.deleteRuleByName(name)
+    }
+  }
+
+  override fun updateDistanceRule(request: UpdateDistanceRuleRequest): DistanceRule {
+    synchronized(RULE_SYNC) {
+      val name = request.name
+      val ruleToBeUpdated: DistanceRule =
+        (ruleRepository.findAllByName(name) ?: throw UnknownRuleNameException(name)) as DistanceRule
+      if (request.body != null) {
+        ruleToBeUpdated.body = request.body
+      }
+      if (request.basicPoints != null) {
+        ruleToBeUpdated.basicPoints = request.basicPoints
+      }
+      if (request.minKilometers != null) {
+        ruleToBeUpdated.minKilometers = request.minKilometers
+      }
+
+      return ruleRepository.saveAndFlush(ruleToBeUpdated)
+    }
+  }
+
+  override fun updateTimeRule(request: UpdateTimeRuleRequest): TimeRule {
+    synchronized(RULE_SYNC) {
+      val name = request.name
+      val ruleToBeUpdated = (ruleRepository.findAllByName(name) ?: throw UnknownRuleNameException(name)) as TimeRule
+      if (request.body != null) {
+        ruleToBeUpdated.body = request.body
+      }
+      if (request.basicPoints != null) {
+        ruleToBeUpdated.basicPoints = request.basicPoints
+      }
+      if (request.minimumMinutes != null) {
+        ruleToBeUpdated.minimumMinutes = request.minimumMinutes
+      }
+      return ruleRepository.saveAndFlush(ruleToBeUpdated)
+    }
+  }
 
   companion object {
     val RULE_SYNC = Any()

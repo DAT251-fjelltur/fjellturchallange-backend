@@ -5,7 +5,7 @@ const val ADMIN_ROLE = "ROLE_ADMIN"
 const val GET_OTHER_PERMISSION = "get_other"
 const val DELETE_OTHER_PERMISSION = "delete_other"
 
-const val CREATE_RULE_PERMISSION = "create_rule"
+const val CRUD_RULE_PERMISSION = "CRUD_rule"
 
 const val UPDATE_OTHER_ACCOUNT_PERMISSION = "update_other_basic_account"
 
