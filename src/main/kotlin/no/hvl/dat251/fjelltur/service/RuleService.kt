@@ -37,7 +37,4 @@ interface RuleService {
 
   @PreAuthorize("hasAuthority('$CRUD_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun updateTimeRule(request: UpdateTimeRuleRequest): TimeRule
-
-  @PreAuthorize("hasAuthority('$CRUD_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
-  fun findRuleByName(name: String): Rule
 }

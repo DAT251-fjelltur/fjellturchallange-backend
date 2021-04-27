@@ -383,12 +383,6 @@ internal class RuleServiceImplTest {
 
   @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
-  fun `get rule throws if no rule exists`() {
-    val ruleName = "Test rule"
-    assertThrows<UnknownRuleNameException> { ruleService.findRuleByName(ruleName) }
-  }
-  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
-  @Test
   fun `throws when account not found`() {
     assertThrows<UnknownRuleNameException> { ruleService.findByName("non-existing") }
   }
@@ -401,7 +395,7 @@ internal class RuleServiceImplTest {
     val basicPoints: Int = 3
     val minTime: Int = 10
     makeNewBasicTimeRule(name = ruleName)
-    val getRule = ruleService.findRuleByName(ruleName) as TimeRule
+    val getRule = ruleService.findByName(ruleName) as TimeRule
     assertEquals(ruleName, getRule.name)
     assertEquals(body, getRule.body)
     assertEquals(basicPoints, getRule.basicPoints)

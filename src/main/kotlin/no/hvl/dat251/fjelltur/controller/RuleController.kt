@@ -49,6 +49,18 @@ class RuleController(@Autowired val ruleService: RuleService) {
     return ruleService.findAll(page).map { it.toResponse() }
   }
 
+  @Operation(
+    summary = "Find a rule",
+    parameters = [Parameter(name = "name", description = "Name of the rule to get")],
+    responses = [
+      ApiResponse(responseCode = "200"),
+      ApiResponse(
+        responseCode = "404",
+        description = "No rule with the given name in the database",
+        content = [Content()]
+      )
+    ]
+  )
   @GetMapping("/find")
   fun getAll(@RequestParam("name") name: String): RegisteredRuleResponse {
     return ruleService.findByName(name).toResponse()
@@ -108,22 +120,5 @@ class RuleController(@Autowired val ruleService: RuleService) {
   @PutMapping("/update/time")
   fun updateTime(@Valid @RequestBody request: UpdateTimeRuleRequest): TimeRuleIdOnlyResponse {
     return ruleService.updateTimeRule(request).toTimeRuleOnlyResponse()
-  }
-
-  @Operation(
-    summary = "Get a rule",
-    parameters = [Parameter(name = "name", description = "Name of the rule to get")],
-    responses = [
-      ApiResponse(responseCode = "200"),
-      ApiResponse(
-        responseCode = "404",
-        description = "No rule with the given name in the database",
-        content = [Content()]
-      )
-    ]
-  )
-  @GetMapping("/get")
-  fun getRuleByName(@RequestParam("name") name: String): Rule {
-    return ruleService.findRuleByName(name)
   }
 }
