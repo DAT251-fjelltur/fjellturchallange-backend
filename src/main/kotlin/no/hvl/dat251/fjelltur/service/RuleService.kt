@@ -9,9 +9,11 @@ import no.hvl.dat251.fjelltur.dto.UpdateTimeRuleRequest
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.entity.TimeRule
+import no.hvl.dat251.fjelltur.exception.UnknownRuleNameException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.ExceptionHandler
 
 interface RuleService {
 
@@ -23,6 +25,10 @@ interface RuleService {
 
   fun findAll(pageable: Pageable): Page<Rule>
 
+  @ExceptionHandler(UnknownRuleNameException::class)
+  fun findByName(name: String): Rule
+
+  @ExceptionHandler(UnknownRuleNameException::class)
   @PreAuthorize("hasAuthority('$CRUD_RULE_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun deleteRule(name: String)
 

@@ -23,13 +23,13 @@ class UpdateTimeRuleRequest(
 
 data class TimeRuleIdOnlyResponse(val id: String)
 
-data class RegisteredTimeRuleResponse(
-  val id: String,
-  val name: String,
-  val body: String,
-  val basicPoints: Int,
+class RegisteredTimeRuleResponse(
+  id: String,
+  name: String,
+  body: String,
+  basicPoints: Int,
   val minimumMinutes: Int,
-)
+) : RegisteredRuleResponse(id, name, body, basicPoints)
 
 inline class TimeRuleId(val id: String)
 

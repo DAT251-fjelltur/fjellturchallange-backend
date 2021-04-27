@@ -48,6 +48,11 @@ class RuleController(@Autowired val ruleService: RuleService) {
     return ruleService.findAll(page).map { it.toResponse() }
   }
 
+  @GetMapping("/find")
+  fun getAll(@RequestParam("name") name: String): RegisteredRuleResponse {
+    return ruleService.findByName(name).toResponse()
+  }
+
   @PostMapping("/create/distance")
   fun createDistance(@Valid @RequestBody request: CreateDistanceRuleRequest): DistanceRuleIdOnlyResponse {
     return ruleService.createDistanceRule(request).toDistanceRuleOnlyResponse()

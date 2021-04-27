@@ -28,13 +28,13 @@ class UpdateDistanceRuleRequest(
 
 data class DistanceRuleIdOnlyResponse(val id: String)
 
-data class RegisteredDistanceRuleResponse(
-  val id: String,
-  val name: String,
-  val body: String,
-  val basicPoints: Int,
+class RegisteredDistanceRuleResponse(
+  id: String,
+  name: String,
+  body: String,
+  basicPoints: Int,
   val minKilometers: Int,
-)
+) : RegisteredRuleResponse(id, name, body, basicPoints)
 
 inline class DistanceRuleId(val id: String)
 
