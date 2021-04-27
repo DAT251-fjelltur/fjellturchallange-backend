@@ -10,8 +10,8 @@ import no.hvl.dat251.fjelltur.dto.UpdateTimeRuleRequest
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.entity.TimeRule
-import no.hvl.dat251.fjelltur.exception.UnknownRuleNameException
 import no.hvl.dat251.fjelltur.entity.rule.MountainRule
+import no.hvl.dat251.fjelltur.exception.UnknownRuleNameException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize

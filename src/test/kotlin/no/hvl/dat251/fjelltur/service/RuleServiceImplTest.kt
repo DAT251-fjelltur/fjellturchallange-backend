@@ -5,9 +5,9 @@ import no.hvl.dat251.fjelltur.CRUD_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateMountainRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
+import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.UpdateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.UpdateTimeRuleRequest
-import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
 import no.hvl.dat251.fjelltur.entity.TimeRule
