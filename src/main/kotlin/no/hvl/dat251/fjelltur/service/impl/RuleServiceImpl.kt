@@ -58,6 +58,10 @@ class RuleServiceImpl(@Autowired val ruleRepository: RuleRepository) : RuleServi
 
   override fun findAll(pageable: Pageable) = findAllRules { ruleRepository.findAll(pageable) }
 
+  override fun findByName(name: String): Rule {
+    return ruleRepository.findAllByName(name) ?: throw UnknownRuleNameException(name)
+  }
+
   @Transactional
   override fun deleteRule(name: String) {
     synchronized(RULE_SYNC) {
