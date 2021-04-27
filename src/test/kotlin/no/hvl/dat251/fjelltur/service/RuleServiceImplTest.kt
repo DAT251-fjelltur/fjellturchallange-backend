@@ -269,6 +269,7 @@ internal class RuleServiceImplTest {
     val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
     assertEquals(updatedBody, updatedDistanceRule.body)
   }
+
   @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `update distance rule with new basicPoints`() {
@@ -282,6 +283,7 @@ internal class RuleServiceImplTest {
     val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
     assertEquals(updatedBasicPoints, updatedDistanceRule.basicPoints)
   }
+
   @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `update distance rule with new min kilometers`() {
@@ -295,6 +297,7 @@ internal class RuleServiceImplTest {
     val updatedDistanceRule = ruleRepository.findAllByName(ruleName) as DistanceRule
     assertEquals(updatedMinKm, updatedDistanceRule.minKilometers)
   }
+
   @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `update distance rule with no updated values doesn't do anything`() {
@@ -347,6 +350,7 @@ internal class RuleServiceImplTest {
 
     assertEquals(basicPoints, newTimeRule.basicPoints)
   }
+
   @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
   fun `update time rule with new basic minMin`() {
@@ -359,5 +363,20 @@ internal class RuleServiceImplTest {
     val newTimeRule = ruleService.updateTimeRule(updateTimeRuleRequest)
 
     assertEquals(newMinMin, newTimeRule.minimumMinutes)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `throws when account not found`() {
+    assertThrows<UnknownRuleNameException> { ruleService.findByName("non-existing") }
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `Find correct rule by name`() {
+    val ruleName = "exists"
+    val createdRule = makeNewBasicTimeRule(name = ruleName)
+    val foundRule = assertDoesNotThrow { ruleService.findByName(ruleName) }
+    assertEquals(createdRule, foundRule)
   }
 }
