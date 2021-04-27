@@ -8,7 +8,7 @@ class CreateDistanceRuleRequest(
   body: String,
   @Min(1)
   basicPoints: Int,
-  @Min(0)
+  @Min(1) // TODO test
   val minKilometers: Int
 ) : CreateRuleRequest(name, body, basicPoints)
 

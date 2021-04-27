@@ -9,7 +9,7 @@ object TestSecurityUtils {
   /**
    * Shortcut for [AccountService.createAccount]
    */
-  fun AccountService.createNewTestAccount(username: String, password: String): Account {
+  fun AccountService.createNewTestAccount(username: String, password: String = "wow så kul elg er"): Account {
     return createAccount(AccountCreationRequest(username, password, null))
   }
 }

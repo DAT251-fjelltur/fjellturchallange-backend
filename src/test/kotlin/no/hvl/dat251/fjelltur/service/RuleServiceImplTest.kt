@@ -47,7 +47,7 @@ internal class RuleServiceImplTest {
     ruleRepository.deleteAll()
   }
 
-  private fun makeNewBasicTimeRule(
+  fun makeNewBasicTimeRule(
     name: String = "Test_time_rule",
     body: String = "This is a testing time rule for testing",
     basicPoints: Int = 3,
@@ -56,7 +56,7 @@ internal class RuleServiceImplTest {
     return ruleService.createTimeRule(CreateTimeRuleRequest(name, body, basicPoints, minTime))
   }
 
-  private fun makeNewBasicDistanceRule(
+  fun makeNewBasicDistanceRule(
     name: String = "Test_distance_rule",
     body: String = "This is a test distance rule",
     basicPoints: Int = 3,
@@ -79,11 +79,6 @@ internal class RuleServiceImplTest {
 
     trip.locations = mutableListOf(coordinateOne, coordinateTwo)
     val timeRule = TimeRule()
-
-    trip.ongoing = true
-    assertThrows<IllegalArgumentException> { timeRule.calculatePoints(trip) }
-
-    trip.ongoing = false
 
     timeRule.basicPoints = 1
     timeRule.minimumMinutes = 30
@@ -114,11 +109,6 @@ internal class RuleServiceImplTest {
     trip.locations = mutableListOf(coordinateOne, coordinateTwo)
 
     val distanceRule = DistanceRule()
-
-    trip.ongoing = true
-    assertThrows<IllegalArgumentException> { distanceRule.calculatePoints(trip) }
-
-    trip.ongoing = false
 
     distanceRule.basicPoints = 1
     distanceRule.minKilometers = 1
@@ -401,10 +391,10 @@ internal class RuleServiceImplTest {
     assertEquals(basicPoints, getRule.basicPoints)
     assertEquals(minTime, getRule.minimumMinutes)
   }
-  
+
   @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
   @Test
-fun `Find correct rule by name`() {
+  fun `Find correct rule by name`() {
     val ruleName = "exists"
     val createdRule = makeNewBasicTimeRule(name = ruleName)
     val foundRule = assertDoesNotThrow { ruleService.findByName(ruleName) }

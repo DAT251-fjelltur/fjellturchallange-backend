@@ -4,6 +4,7 @@ import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.TripId
 import no.hvl.dat251.fjelltur.entity.Account
 import no.hvl.dat251.fjelltur.entity.GPSLocation
+import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.entity.Trip
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
@@ -60,4 +61,6 @@ interface TripService {
    * Calculate distance traveled in the trip
    */
   fun calculateTripDistance(trip: Trip): Int
+
+  fun tripScore(trip: Trip): Pair<Rule?, Int>
 }

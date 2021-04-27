@@ -15,7 +15,6 @@ import no.hvl.dat251.fjelltur.dto.UpdateTimeRuleRequest
 import no.hvl.dat251.fjelltur.dto.toDistanceRuleOnlyResponse
 import no.hvl.dat251.fjelltur.dto.toResponse
 import no.hvl.dat251.fjelltur.dto.toTimeRuleOnlyResponse
-import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.service.RuleService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
