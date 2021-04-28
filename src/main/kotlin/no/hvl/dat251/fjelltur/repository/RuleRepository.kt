@@ -7,4 +7,6 @@ interface RuleRepository : JpaRepository<Rule, String> {
   fun findAllByName(name: String): Rule?
 
   fun existsRuleByName(name: String): Boolean
+
+  fun deleteRuleByName(name: String): Long
 }
