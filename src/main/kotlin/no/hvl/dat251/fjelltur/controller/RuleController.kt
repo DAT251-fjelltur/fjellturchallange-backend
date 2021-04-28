@@ -6,13 +6,16 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import no.hvl.dat251.fjelltur.API_VERSION_1
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
+import no.hvl.dat251.fjelltur.dto.CreateMountainRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
 import no.hvl.dat251.fjelltur.dto.DistanceRuleIdOnlyResponse
+import no.hvl.dat251.fjelltur.dto.MountainRuleIdOnlyResponse
 import no.hvl.dat251.fjelltur.dto.RegisteredRuleResponse
 import no.hvl.dat251.fjelltur.dto.TimeRuleIdOnlyResponse
 import no.hvl.dat251.fjelltur.dto.UpdateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.UpdateTimeRuleRequest
 import no.hvl.dat251.fjelltur.dto.toDistanceRuleOnlyResponse
+import no.hvl.dat251.fjelltur.dto.toMountainRuleOnlyResponse
 import no.hvl.dat251.fjelltur.dto.toResponse
 import no.hvl.dat251.fjelltur.dto.toTimeRuleOnlyResponse
 import no.hvl.dat251.fjelltur.service.RuleService
@@ -68,6 +71,11 @@ class RuleController(@Autowired val ruleService: RuleService) {
   @PostMapping("/create/distance")
   fun createDistance(@Valid @RequestBody request: CreateDistanceRuleRequest): DistanceRuleIdOnlyResponse {
     return ruleService.createDistanceRule(request).toDistanceRuleOnlyResponse()
+  }
+
+  @PostMapping("/create/mountain")
+  fun createMountain(@Valid @RequestBody request: CreateMountainRuleRequest): MountainRuleIdOnlyResponse {
+    return ruleService.createMountainRule(request).toMountainRuleOnlyResponse()
   }
 
   @Operation(

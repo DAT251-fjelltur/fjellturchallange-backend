@@ -1,13 +1,13 @@
 package no.hvl.dat251.fjelltur.entity
 
-import no.hvl.dat251.fjelltur.dto.TIMERULE
+import no.hvl.dat251.fjelltur.dto.TIME_RULE
 import java.time.Duration
 import javax.persistence.Column
 import javax.persistence.DiscriminatorValue
 import javax.persistence.Entity
 
 @Entity
-@DiscriminatorValue(TIMERULE)
+@DiscriminatorValue(TIME_RULE)
 class TimeRule : Rule() {
   @field:Column
   var minimumMinutes: Int? = null

@@ -3,13 +3,16 @@ package no.hvl.dat251.fjelltur.service
 import no.hvl.dat251.fjelltur.ADMIN_ROLE
 import no.hvl.dat251.fjelltur.CRUD_RULE_PERMISSION
 import no.hvl.dat251.fjelltur.dto.CreateDistanceRuleRequest
+import no.hvl.dat251.fjelltur.dto.CreateMountainRuleRequest
 import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
+import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.UpdateDistanceRuleRequest
 import no.hvl.dat251.fjelltur.dto.UpdateTimeRuleRequest
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
 import no.hvl.dat251.fjelltur.entity.TimeRule
 import no.hvl.dat251.fjelltur.entity.Trip
+import no.hvl.dat251.fjelltur.entity.rule.MountainRule
 import no.hvl.dat251.fjelltur.exception.NotUniqueRuleException
 import no.hvl.dat251.fjelltur.exception.UnknownRuleNameException
 import no.hvl.dat251.fjelltur.repository.RuleRepository
@@ -22,6 +25,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
@@ -63,6 +67,38 @@ internal class RuleServiceImplTest {
     minKm: Int = 10
   ): DistanceRule {
     return ruleService.createDistanceRule(CreateDistanceRuleRequest(name, body, basicPoints, minKm))
+  }
+
+  fun createGPSLocationRequest(
+    lat: Double = 0.0,
+    long: Double = 0.0,
+    acc: Double = 0.0
+  ): GPSLocationRequest {
+    return GPSLocationRequest(
+      lat.toBigDecimal(),
+      long.toBigDecimal(),
+      acc.toBigDecimal()
+    )
+  }
+
+  fun createMountainRule(
+    name: String = "mountain rule",
+    body: String = "This is a test rule",
+    basicPoints: Int = 3,
+    minMetersTraveled: Int = 2200,
+    radiusMeters: Int = 50,
+    summit: GPSLocationRequest = createGPSLocationRequest()
+  ): MountainRule {
+    return ruleService.createMountainRule(
+      CreateMountainRuleRequest(
+        name = name,
+        body = body,
+        basicPoints = basicPoints,
+        minMetersTraveled = minMetersTraveled,
+        summitRadiusMeters = radiusMeters,
+        summit = summit
+      )
+    )
   }
 
   @Test
@@ -399,5 +435,41 @@ internal class RuleServiceImplTest {
     val createdRule = makeNewBasicTimeRule(name = ruleName)
     val foundRule = assertDoesNotThrow { ruleService.findByName(ruleName) }
     assertEquals(createdRule, foundRule)
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `make new mountain rule`() {
+    val ruleName = "mountain rulez"
+    val rule = createMountainRule(ruleName)
+    assertEquals(1, ruleRepository.count())
+    assertEquals(rule, ruleRepository.findAllByName(ruleName))
+  }
+
+  @WithMockUser(authorities = [CRUD_RULE_PERMISSION])
+  @Test
+  fun `all fields of a mountain rule are set right`() {
+    val ruleName = "mountain yeye"
+    val ruleBody = "mountain woo"
+    val basic = 42
+    val traveled = 22000
+    val radius = 43
+    val rule = createMountainRule(
+      name = ruleName,
+      body = ruleBody,
+      basicPoints = basic,
+      minMetersTraveled = traveled,
+      radiusMeters = radius
+    )
+    val dbRule = assertNotNull(ruleRepository.findByIdOrNull(rule.id.id))
+
+    assertTrue(dbRule is MountainRule, "was ${dbRule::class}")
+
+    assertEquals(ruleName, dbRule.name)
+    assertEquals(ruleBody, dbRule.body)
+    assertEquals(basic, dbRule.basicPoints)
+    assertEquals(traveled, dbRule.minMetersTraveled)
+    assertEquals(radius, dbRule.summitRadiusMeters)
+    assertTrue(rule.summit?.equalsIgnoreTime(dbRule.summit) == true)
   }
 }

@@ -46,7 +46,7 @@ class GPSLocation {
     }
   }
 
-  override fun equals(other: Any?): Boolean {
+  fun equalsIgnoreTime(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
 
@@ -56,8 +56,15 @@ class GPSLocation {
     if (latitude != other.latitude) return false
     if (longitude != other.longitude) return false
     if (accuracy != other.accuracy) return false
-    if (recordedAt != other.recordedAt) return false
 
+    return true
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (equalsIgnoreTime(other)) {
+      other as GPSLocation
+      return recordedAt == other.recordedAt
+    }
     return true
   }
 

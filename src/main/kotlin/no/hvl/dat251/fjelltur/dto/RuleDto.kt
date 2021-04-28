@@ -3,10 +3,14 @@ package no.hvl.dat251.fjelltur.dto
 import no.hvl.dat251.fjelltur.entity.DistanceRule
 import no.hvl.dat251.fjelltur.entity.Rule
 import no.hvl.dat251.fjelltur.entity.TimeRule
+import no.hvl.dat251.fjelltur.entity.rule.MountainRule
 import javax.validation.constraints.Min
+import javax.validation.constraints.Size
 
 abstract class CreateRuleRequest(
+  @Size(max = 255)
   val name: String,
+  @Size(max = 1024)
   val body: String,
   @Min(1)
   val basicPoints: Int,
@@ -38,6 +42,7 @@ fun Rule.toResponse(): RegisteredRuleResponse {
   return when (this) {
     is DistanceRule -> this.toResponse()
     is TimeRule -> this.toResponse()
+    is MountainRule -> this.toResponse()
     else -> RegisteredRuleResponse(
       id.id,
       name ?: error("Rule name is null"),
@@ -47,5 +52,6 @@ fun Rule.toResponse(): RegisteredRuleResponse {
   }
 }
 
-const val TIMERULE = "TIME RULE"
-const val DISTANCERULE = "DISTANCE RULE"
+const val TIME_RULE = "TIME RULE"
+const val DISTANCE_RULE = "DISTANCE RULE"
+const val MOUNTAIN_RULE = "MOUNTAIN RULE"

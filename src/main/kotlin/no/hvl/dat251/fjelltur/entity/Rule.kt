@@ -28,7 +28,7 @@ abstract class Rule {
   @field:Column
   var name: String? = null
 
-  @field:Column
+  @field:Column(length = 1024)
   var body: String? = null
 
   @field: Column

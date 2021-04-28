@@ -1,13 +1,14 @@
 package no.hvl.dat251.fjelltur.entity
 
-import no.hvl.dat251.fjelltur.dto.DISTANCERULE
+import no.hvl.dat251.fjelltur.dto.DISTANCE_RULE
 import javax.persistence.Column
 import javax.persistence.DiscriminatorValue
 import javax.persistence.Entity
 
 @Entity
-@DiscriminatorValue(DISTANCERULE)
+@DiscriminatorValue(DISTANCE_RULE)
 class DistanceRule : Rule() {
+
   @field:Column
   var minKilometers: Int? = 0
 
