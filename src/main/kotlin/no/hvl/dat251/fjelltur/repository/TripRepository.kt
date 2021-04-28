@@ -11,4 +11,6 @@ interface TripRepository : JpaRepository<Trip, String> {
   fun findAllByAccountIsAndOngoingTrue(account: Account): Set<Trip>
 
   fun existsTripByAccountIsAndOngoingTrue(account: Account): Boolean
+
+  fun findAllByAccountAndOngoingIsFalse(account: Account): List<Trip>
 }

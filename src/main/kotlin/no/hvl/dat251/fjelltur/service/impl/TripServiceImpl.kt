@@ -119,6 +119,10 @@ class TripServiceImpl(
     return optional.get()
   }
 
+  override fun findPreviousTrips(id: Account): List<Trip> {
+    return tripRepository.findAllByAccountAndOngoingIsFalse(id)
+  }
+
   companion object {
     val SYNC_OBJECT = Any()
     val SYNC_END_TRIP_OBJECT = Any()

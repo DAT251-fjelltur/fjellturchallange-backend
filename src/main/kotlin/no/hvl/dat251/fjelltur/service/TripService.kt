@@ -63,4 +63,9 @@ interface TripService {
   fun calculateTripDistance(trip: Trip): Int
 
   fun tripScore(trip: Trip): Pair<Rule?, Int>
+
+  /**
+   * Return all trips from a user that is not ongoing
+   */
+  fun findPreviousTrips(id: Account): List<Trip>
 }
