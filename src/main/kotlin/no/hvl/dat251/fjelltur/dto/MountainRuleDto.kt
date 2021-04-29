@@ -30,10 +30,11 @@ class RegisteredMountainRuleResponse(
   name: String,
   body: String,
   basicPoints: Int,
+  ruleType: String,
   val minMetersTraveled: Int,
   val summitRadiusMeters: Int,
-  val summit: GPSLocationResponse
-) : RegisteredRuleResponse(id, name, body, basicPoints)
+  val summit: GPSLocationResponse,
+) : RegisteredRuleResponse(id, name, body, basicPoints, ruleType)
 
 inline class MountainRuleId(val id: String)
 
@@ -46,6 +47,7 @@ fun MountainRule.toResponse() = RegisteredMountainRuleResponse(
   name ?: error("Name is null"),
   body ?: error("Body is null"),
   basicPoints ?: error("Basic points is null"),
+  ruleType,
   minMetersTraveled,
   summitRadiusMeters,
   summit?.toResponse() ?: error("radius is null")

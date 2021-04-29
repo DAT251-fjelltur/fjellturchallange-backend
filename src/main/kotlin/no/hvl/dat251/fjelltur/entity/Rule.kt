@@ -22,8 +22,8 @@ abstract class Rule {
   @field:Column(unique = true)
   var id: RuleId = RuleId("")
 
-  @field:Column(updatable = false, insertable = false)
-  lateinit var rule_type: String
+  @field:Column(name = "rule_type", updatable = false, insertable = false)
+  lateinit var ruleType: String
 
   @field:Column
   var name: String? = null

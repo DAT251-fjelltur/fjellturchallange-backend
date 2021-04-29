@@ -28,8 +28,9 @@ class RegisteredTimeRuleResponse(
   name: String,
   body: String,
   basicPoints: Int,
+  ruleType: String,
   val minimumMinutes: Int,
-) : RegisteredRuleResponse(id, name, body, basicPoints)
+) : RegisteredRuleResponse(id, name, body, basicPoints, ruleType)
 
 inline class TimeRuleId(val id: String)
 
@@ -42,5 +43,6 @@ fun TimeRule.toResponse(): RegisteredTimeRuleResponse = RegisteredTimeRuleRespon
   name ?: error("Name is null"),
   body ?: error("Body is null"),
   basicPoints ?: error("Basic points is null"),
+  ruleType,
   minimumMinutes ?: error("Min time is null")
 )

@@ -32,6 +32,7 @@ open class RegisteredRuleResponse(
   val name: String,
   val body: String,
   val basicPoints: Int,
+  val ruleType: String
 )
 
 fun Rule.toRuleIdOnlyResponse(): RuleIdOnlyResponse {
@@ -48,6 +49,7 @@ fun Rule.toResponse(): RegisteredRuleResponse {
       name ?: error("Rule name is null"),
       body ?: error("Rule body is null"),
       basicPoints ?: error("Rule basic points is null"),
+      ruleType
     )
   }
 }

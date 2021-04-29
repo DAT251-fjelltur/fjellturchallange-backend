@@ -33,8 +33,9 @@ class RegisteredDistanceRuleResponse(
   name: String,
   body: String,
   basicPoints: Int,
+  ruleType: String,
   val minKilometers: Int,
-) : RegisteredRuleResponse(id, name, body, basicPoints)
+) : RegisteredRuleResponse(id, name, body, basicPoints, ruleType)
 
 inline class DistanceRuleId(val id: String)
 
@@ -47,5 +48,6 @@ fun DistanceRule.toResponse() = RegisteredDistanceRuleResponse(
   name ?: error("Name is null"),
   body ?: error("Body is null"),
   basicPoints ?: error("Basic points is null"),
+  ruleType,
   minKilometers ?: error("Kilometers is null")
 )
