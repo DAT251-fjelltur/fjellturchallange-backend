@@ -1,13 +1,15 @@
 package no.hvl.dat251.fjelltur.dto
 
-import no.hvl.dat251.fjelltur.model.GPSLocation
-import no.hvl.dat251.fjelltur.model.Trip
+import io.swagger.v3.oas.annotations.media.Schema
+import no.hvl.dat251.fjelltur.entity.GPSLocation
+import no.hvl.dat251.fjelltur.entity.Trip
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.OffsetDateTime
 import javax.validation.constraints.DecimalMax
 import javax.validation.constraints.DecimalMin
 import javax.validation.constraints.Digits
+import javax.validation.constraints.Min
 
 /**
  *
@@ -76,6 +78,15 @@ fun Trip?.toTripIdOnlyResponse(): TripIdOnlyResponse {
   return TripIdOnlyResponse(this?.id?.id)
 }
 
-data class TripDurationResponse(val seconds: Long)
+data class TripDurationResponse(@Min(0) val seconds: Long)
+
+data class TripDistanceResponse(@Min(0) val meters: Int)
+
+data class TripScoreResponse(
+  @Schema(description = "Will be null if there are no rules defined")
+  val rule: String?,
+  @Min(0)
+  val score: Float
+)
 
 fun Duration.toTripDuration() = TripDurationResponse(toSeconds())

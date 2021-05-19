@@ -1,14 +1,19 @@
 package no.hvl.dat251.fjelltur.service
 
+import no.hvl.dat251.fjelltur.ADMIN_ROLE
+import no.hvl.dat251.fjelltur.dto.CreateTimeRuleRequest
 import no.hvl.dat251.fjelltur.dto.GPSLocationRequest
 import no.hvl.dat251.fjelltur.dto.TripId
+import no.hvl.dat251.fjelltur.entity.GPSLocation
+import no.hvl.dat251.fjelltur.entity.GPSLocationTest.Companion.createCoordinate
+import no.hvl.dat251.fjelltur.entity.Trip
 import no.hvl.dat251.fjelltur.exception.AccountAlreadyOnTripException
-import no.hvl.dat251.fjelltur.exception.TooManyOngoingTripsException
 import no.hvl.dat251.fjelltur.exception.TripNotFoundException
-import no.hvl.dat251.fjelltur.model.GPSLocation
-import no.hvl.dat251.fjelltur.model.Trip
+import no.hvl.dat251.fjelltur.repository.RuleRepository
 import no.hvl.dat251.fjelltur.repository.TripRepository
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,7 +44,17 @@ class TripServiceTest {
   @Autowired
   private lateinit var accountService: AccountService
 
-  @WithMockUser(username = "TripServiceTest_startTrip")
+  @Autowired
+  private lateinit var ruleService: RuleService
+
+  @Autowired
+  private lateinit var ruleRepository: RuleRepository
+
+  @BeforeEach
+  fun beforeEach() {
+    ruleRepository.deleteAll()
+  }
+
   private fun startTrip(
     lat: Double = 0.0,
     long: Double = 0.0,
@@ -114,7 +129,7 @@ class TripServiceTest {
     }
     tripRepository.saveAndFlush(anotherTrip)
 
-    assertThrows<TooManyOngoingTripsException> { tripService.currentTripOrNull() }
+    assertDoesNotThrow { tripService.currentTrip() }
   }
 
   @WithMockUser(username = "TripServiceTest_findExistingTrip")
@@ -161,5 +176,64 @@ class TripServiceTest {
   fun `calculate trip duration ongoing`() {
     val trip = startTrip()
     assertNotEquals(Duration.ZERO, tripService.calculateTripDuration(trip))
+  }
+
+  @WithMockUser(username = "TripServiceTest_tripScoreNoRules")
+  @Test
+  fun `calculate trip score no rules`() {
+    val trip = startTrip()
+    assertEquals(null to 0, tripService.tripScore(trip))
+  }
+
+  @WithMockUser(username = "TripServiceTest_tripScoreSingleRules", authorities = [ADMIN_ROLE])
+  @Test
+  fun `calculate trip score with rules`() {
+    val trip = startTrip()
+    // add a new location one minute in the future
+    trip.locations.add(createCoordinate(recordedAt = trip.locations.first().recordedAt.plusMinutes(1)))
+    val basicPoints = 6
+    val createdRule = ruleService.createTimeRule(CreateTimeRuleRequest("test", "", basicPoints, 1))
+
+    val (rule, score) = assertDoesNotThrow { tripService.tripScore(trip) }
+
+    assertEquals(createdRule.id, rule?.id)
+    assertEquals(basicPoints, score)
+  }
+
+  @WithMockUser(username = "TripServiceTest_tripScoreMultipleRules", authorities = [ADMIN_ROLE])
+  @Test
+  fun `calculated score is the rule with the most points to give`() {
+    val trip = startTrip()
+    // add a new location one minute in the future
+    trip.locations.add(createCoordinate(recordedAt = trip.locations.first().recordedAt.plusMinutes(1)))
+
+    ruleService.createTimeRule(CreateTimeRuleRequest("test", "", 1, 1))
+    val createdRule = ruleService.createTimeRule(CreateTimeRuleRequest("test2", "", 2, 1))
+
+    val (rule, score) = assertDoesNotThrow { tripService.tripScore(trip) }
+
+    assertEquals(createdRule.id, rule?.id)
+    assertEquals(2, score)
+  }
+
+  @WithMockUser(username = "TripServiceTest_tripScoreAddedToAccount", authorities = [ADMIN_ROLE])
+  @Test
+  fun `Account get score when ending trip`() {
+    val trip = startTrip()
+    // add a new location one minute in the future
+    trip.locations.add(createCoordinate(recordedAt = trip.locations.first().recordedAt.plusMinutes(1)))
+    val basicPoints = 6
+    val createdRule = ruleService.createTimeRule(CreateTimeRuleRequest("test", "", basicPoints, 1))
+
+    val (rule, score) = assertDoesNotThrow { tripService.tripScore(trip) }
+
+    assertEquals(createdRule.id, rule?.id)
+    assertEquals(basicPoints, score)
+
+    assertEquals(0f, accountService.getCurrentAccount().score)
+
+    tripService.endTrip(trip)
+
+    assertEquals(basicPoints.toFloat(), accountService.getCurrentAccount().score)
   }
 }

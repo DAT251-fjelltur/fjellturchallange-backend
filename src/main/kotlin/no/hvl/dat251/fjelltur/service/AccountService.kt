@@ -3,13 +3,15 @@ package no.hvl.dat251.fjelltur.service
 import no.hvl.dat251.fjelltur.ADMIN_ROLE
 import no.hvl.dat251.fjelltur.DELETE_OTHER_PERMISSION
 import no.hvl.dat251.fjelltur.GET_OTHER_PERMISSION
-import no.hvl.dat251.fjelltur.UPDATE_OTHER_USER_PERMISSION
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
 import no.hvl.dat251.fjelltur.dto.AccountId
+import no.hvl.dat251.fjelltur.entity.Account
 import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
+import no.hvl.dat251.fjelltur.exception.AccountUpdateFailedException
+import no.hvl.dat251.fjelltur.exception.InsufficientAccessException
 import no.hvl.dat251.fjelltur.exception.NotLoggedInException
-import no.hvl.dat251.fjelltur.model.Account
+import no.hvl.dat251.fjelltur.exception.PasswordNotSecureException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 
 interface AccountService {
 
-  @ExceptionHandler(AccountCreationFailedException::class)
+  @ExceptionHandler(AccountCreationFailedException::class, PasswordNotSecureException::class)
   fun createAccount(request: AccountCreationRequest): Account
 
   @ExceptionHandler(NotLoggedInException::class)
@@ -34,10 +36,12 @@ interface AccountService {
 
   val isNotLoggedIn: Boolean
 
+  @ExceptionHandler(AccountNotFoundException::class)
   fun getAccountByUsername(username: String): Account
 
   fun getAccountByUsernameOrNull(username: String): Account?
 
+  @ExceptionHandler(AccountNotFoundException::class)
   fun getAccountByUid(uid: AccountId): Account
 
   fun getAccountByUidOrNull(uid: AccountId): Account?
@@ -45,10 +49,9 @@ interface AccountService {
   @PreAuthorize("hasAuthority('$GET_OTHER_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun findAllByDisabled(disabled: Boolean, pageable: Pageable): Page<Account>
 
-  @PreAuthorize("hasAuthority('$GET_OTHER_PERMISSION') or hasRole('$ADMIN_ROLE')")
   fun findAll(pageable: Pageable): Page<Account>
 
-  @PreAuthorize("hasAuthority('$UPDATE_OTHER_USER_PERMISSION') or hasRole('$ADMIN_ROLE')")
+  @ExceptionHandler(InsufficientAccessException::class, AccountUpdateFailedException::class)
   fun updateUser(user: Account): Account
 
   /**
@@ -70,4 +73,10 @@ interface AccountService {
    * Check if a user with the supplied login name exists in the system.
    */
   fun userExists(username: String): Boolean
+
+  companion object {
+    /** Account username must match this regex */
+    val USERNAME_REGEX = "^[a-zA-Z0-9ÆØÅæøå_-]+$".toRegex()
+    const val MIN_PASSWORD_LENGTH = 8
+  }
 }

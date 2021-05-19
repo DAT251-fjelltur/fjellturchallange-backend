@@ -1,7 +1,7 @@
 package no.hvl.dat251.fjelltur.exception
 
 import no.hvl.dat251.fjelltur.dto.TripId
-import no.hvl.dat251.fjelltur.model.Account
+import no.hvl.dat251.fjelltur.entity.Account
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 

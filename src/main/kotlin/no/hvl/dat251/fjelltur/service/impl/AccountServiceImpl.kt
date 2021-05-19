@@ -1,16 +1,22 @@
 package no.hvl.dat251.fjelltur.service.impl
 
+import no.hvl.dat251.fjelltur.ADMIN_ROLE
+import no.hvl.dat251.fjelltur.UPDATE_ACCOUNT_AUTHORITIES_PERMISSION
+import no.hvl.dat251.fjelltur.UPDATE_OTHER_ACCOUNT_PERMISSION
 import no.hvl.dat251.fjelltur.dto.AccountCreationRequest
 import no.hvl.dat251.fjelltur.dto.AccountId
+import no.hvl.dat251.fjelltur.entity.Account
 import no.hvl.dat251.fjelltur.exception.AccountCreationFailedException
 import no.hvl.dat251.fjelltur.exception.AccountNotFoundException
 import no.hvl.dat251.fjelltur.exception.AccountUpdateFailedException
+import no.hvl.dat251.fjelltur.exception.InsufficientAccessException
 import no.hvl.dat251.fjelltur.exception.InvalidCredentialsException
 import no.hvl.dat251.fjelltur.exception.NotLoggedInException
 import no.hvl.dat251.fjelltur.exception.PasswordNotSecureException
-import no.hvl.dat251.fjelltur.model.Account
 import no.hvl.dat251.fjelltur.repository.AccountRepository
 import no.hvl.dat251.fjelltur.service.AccountService
+import no.hvl.dat251.fjelltur.service.AccountService.Companion.MIN_PASSWORD_LENGTH
+import no.hvl.dat251.fjelltur.service.AccountService.Companion.USERNAME_REGEX
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.data.domain.Page
@@ -32,17 +38,28 @@ class AccountServiceImpl(
   private val environment: Environment
 ) : AccountService {
 
-  override fun createAccount(request: AccountCreationRequest): Account {
-    if (getAccountByUsernameOrNull(request.username) != null) {
-      throw AccountCreationFailedException("Account name already taken")
+  private fun testUsername(username: String): String? {
+    if (getAccountByUsernameOrNull(username) != null) {
+      return "Account name already taken"
     }
-    if (!USERNAME_REGEX.matches(request.username)) {
-      throw AccountCreationFailedException("Account username must match the regex: ${USERNAME_REGEX.pattern}")
+    if (!USERNAME_REGEX.matches(username)) {
+      return "Account username must match the regex: ${USERNAME_REGEX.pattern}"
+    }
+    return null
+  }
+
+  private fun testPassword(password: String) {
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      throw PasswordNotSecureException("Given password is too short. It must be at least $MIN_PASSWORD_LENGTH characters long")
+    }
+  }
+
+  override fun createAccount(request: AccountCreationRequest): Account {
+    testUsername(request.username)?.also {
+      throw AccountCreationFailedException(it)
     }
 
-    if (request.password.length < 8) {
-      throw PasswordNotSecureException("${request.username} your password is too short")
-    }
+    testPassword(request.password)
 
     val account = Account()
     account.password = passwordEncoder.encode(request.password)
@@ -67,10 +84,12 @@ class AccountServiceImpl(
       return when (val principal = SecurityContextHolder.getContext().authentication.principal) {
         is String -> AccountId(principal)
         is UserDetails -> {
-          check("test" in environment.activeProfiles) { "Authentication principal cannot be a UserDetails when the 'test' profile is not active" }
+          check("test" in environment.activeProfiles) {
+            "Authentication principal cannot be a UserDetails when the 'test' profile is not active"
+          }
           val existingAccount = getAccountByUsernameOrNull(principal.username)
           if (existingAccount != null) {
-            // This persist between tests
+            // Accounts persist between tests
             // one fix is to add `@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)` to the test class
             return existingAccount.id
           }
@@ -111,12 +130,26 @@ class AccountServiceImpl(
 
   override fun findAll(pageable: Pageable) = findAllAccounts { accountRepository.findAll(pageable) }
 
-  // TODO make sure user only updates permitted fields
-
   override fun updateUser(user: Account): Account {
     val uid = user.id
+    val loggedIn = getCurrentAccount()
+    val isNotAdmin = ADMIN_ROLE !in loggedIn.authorities
+    if (uid != loggedInUid && isNotAdmin && UPDATE_OTHER_ACCOUNT_PERMISSION !in loggedIn.authorities) {
+      throw InsufficientAccessException("update others accounts")
+    }
 
-    if (user.password != getAccountByUid(uid).password) {
+    val updatingUser = getAccountByUid(uid)
+    if (user.authorities != updatingUser.authorities && isNotAdmin && UPDATE_ACCOUNT_AUTHORITIES_PERMISSION !in loggedIn.authorities) {
+      throw InsufficientAccessException("update permissions of accounts")
+    }
+
+    if (user.username != updatingUser.username) {
+      testUsername(user.username)?.also {
+        throw AccountUpdateFailedException(it)
+      }
+    }
+
+    if (user.password != updatingUser.password) {
       throw AccountUpdateFailedException("Use dedicated method to update password")
     }
     return accountRepository.saveAndFlush(user)
@@ -131,21 +164,17 @@ class AccountServiceImpl(
   // TODO Test
   override fun changePassword(oldPassword: String, newPassword: String): Account {
     val acc = getCurrentAccount()
-    if (newPassword.length < 8) {
-      throw PasswordNotSecureException("${acc.username} your password is too short")
-    }
 
-    if (!passwordEncoder.matches(oldPassword, acc.password)) throw InvalidCredentialsException("${acc.username} your password do not match current password")
+    if (!passwordEncoder.matches(oldPassword, acc.password)) {
+      throw InvalidCredentialsException("${acc.username} your password do not match current password")
+    }
+    testPassword(newPassword)
+
     acc.password = passwordEncoder.encode(newPassword)
     return accountRepository.saveAndFlush(acc)
   }
 
   override fun userExists(username: String): Boolean {
     return getAccountByUsernameOrNull(username) != null
-  }
-
-  companion object {
-    /** Account username must match this regex */
-    val USERNAME_REGEX = "^[a-zA-Z0-9ÆØÅæøå_-]+$".toRegex()
   }
 }
